@@ -1,4 +1,4 @@
-module mklaiMod
+module mksectorWaterMod
 !-----------------------------------------------------------------------
 !BOP
 !
@@ -467,4 +467,4 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
   call domain_clean(tdomain) 
 
 end subroutine mksectorWater
-end module mklaiMod
+end module mksectorWaterMod

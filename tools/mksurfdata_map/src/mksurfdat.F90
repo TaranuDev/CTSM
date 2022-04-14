@@ -39,6 +39,7 @@ program mksurfdat
     use mkdomainMod        , only : domain_type, domain_read_map, domain_read
     use mkdomainMod        , only : domain_write, is_domain_0to360_longs
     use mkgdpMod           , only : mkgdp
+    use mksectorWaterMod   , only : mksectorWater
     use mkpeatMod          , only : mkpeat
     use mksoildepthMod     , only : mksoildepth
     use mkagfirepkmonthMod , only : mkagfirepkmon
@@ -123,6 +124,16 @@ program mksurfdat
     real(r8), allocatable  :: ef1_crp(:)         ! Isoprene emission factor for crops
     real(r8), allocatable  :: organic(:,:)       ! organic matter density (kg/m3)            
     real(r8), allocatable  :: gdp(:)             ! GDP (x1000 1995 US$/capita)
+   !  real(r8), allocatable  :: dom_withd(:)       ! Domestic withdrawal (mm)
+   !  real(r8), allocatable  :: liv_withd(:)       ! Livestock withdrawal (mm)
+   !  real(r8), allocatable  :: elec_withd(:)      ! Thermoelectric withdrawal (mm)
+   !  real(r8), allocatable  :: mfc_withd(:)       ! Manufacturing withdrawal (mm)
+   !  real(r8), allocatable  :: min_withd(:)       ! Mining withdrawal (mm)
+   !  real(r8), allocatable  :: dom_cons(:)        ! Domestic consumption (mm)
+   !  real(r8), allocatable  :: liv_cons(:)        ! Livestock consumption (mm)
+   !  real(r8), allocatable  :: elec_cons(:)       ! Thermoelectric consumption (mm)
+   !  real(r8), allocatable  :: mfc_cons(:)        ! Manufacturing consumption (mm)
+   !  real(r8), allocatable  :: min_cons(:)        ! Mining consumption (mm)
     real(r8), allocatable  :: fpeat(:)           ! peatland fraction of gridcell
     real(r8), allocatable  :: soildepth(:)       ! soil depth (m)
     integer , allocatable  :: agfirepkmon(:)     ! agricultural fire peak month
@@ -168,6 +179,7 @@ program mksurfdat
          mksrf_flai,               &
          mksrf_fdynuse,            &
          mksrf_fgdp,               &
+         mksrf_sectorWater,        &
          mksrf_fpeat,              &
          mksrf_fsoildepth,         &
          mksrf_fabm,               &
@@ -199,6 +211,7 @@ program mksurfdat
          map_flai,                 &
          map_fharvest,             &
          map_fgdp,                 &
+         map_sectorWater,          &
          map_fpeat,                &
          map_fsoildepth,           &
          map_fabm,                 &
@@ -242,6 +255,7 @@ program mksurfdat
     !    mksrf_fhrvtyp -- harvest type dataset
     !    mksrf_fvocef  -- Volatile Organic Compund Emission Factor dataset
     !    mksrf_fgdp ----- GDP dataset
+    !    mksrf_sectorWater ----- sector water withdrawal and consumption dataset
     !    mksrf_fpeat ---- Peatland dataset
     !    mksrf_fsoildepth Soil depth dataset
     !    mksrf_fabm ----- Agricultural fire peak month dataset
@@ -265,6 +279,7 @@ program mksurfdat
     !    map_flai -------- Mapping for mksrf_flai
     !    map_fharvest ---- Mapping for mksrf_flai harvesting
     !    map_fgdp -------- Mapping for mksrf_fgdp
+    !    map_sectorWater -------- Mapping for mksrf_sectorWater
     !    map_fpeat ------- Mapping for mksrf_fpeat
     !    map_fsoildepth -- Mapping for mksrf_fsoildepth
     !    map_fabm -------- Mapping for mksrf_fabm
@@ -450,6 +465,16 @@ program mksurfdat
                pctclay(ns_o,nlevsoi)              , & 
                soicol(ns_o)                       , & 
                gdp(ns_o)                          , & 
+               ! dom_withd(ns_o)                    , & 
+               ! liv_withd(ns_o)                    , & 
+               ! elec_withd(ns_o)                   , & 
+               ! mfc_withd(ns_o)                    , & 
+               ! min_withd(ns_o)                    , & 
+               ! dom_cons(ns_o)                     , & 
+               ! liv_cons(ns_o)                     , & 
+               ! elec_cons(ns_o)                    , & 
+               ! mfc_cons(ns_o)                     , & 
+               ! min_cons(ns_o)                     , & 
                fpeat(ns_o)                        , & 
                soildepth(ns_o)                    , & 
                agfirepkmon(ns_o)                  , & 
@@ -475,6 +500,16 @@ program mksurfdat
     pctclay(:,:)          = spval
     soicol(:)             = -999
     gdp(:)                = spval
+   !  dom_withd(:)          = spval
+   !  liv_withd(:)          = spval
+   !  elec_withd(:)         = spval
+   !  mfc_withd(:)          = spval
+   !  min_withd(:)          = spval
+   !  dom_cons(:)           = spval
+   !  liv_cons(:)           = spval
+   !  elec_cons(:)          = spval
+   !  mfc_cons(:)           = spval
+   !  min_cons(:)           = spval
     fpeat(:)              = spval
     soildepth(:)          = spval
     agfirepkmon(:)        = -999
@@ -528,6 +563,7 @@ program mksurfdat
     write(ndiag,*) 'soil color from:             ',trim(mksrf_fsoicol)
     write(ndiag,*) 'VOC emission factors from:   ',trim(mksrf_fvocef)
     write(ndiag,*) 'gdp from:                    ',trim(mksrf_fgdp)
+    write(ndiag,*) 'sectoral water usage from:   ',trim(mksrf_sectorWater)
     write(ndiag,*) 'peat from:                   ',trim(mksrf_fpeat)
     write(ndiag,*) 'soil depth from:             ',trim(mksrf_fsoildepth)
     write(ndiag,*) 'abm from:                    ',trim(mksrf_fabm)
@@ -548,6 +584,7 @@ program mksurfdat
     write(ndiag,*)' mapping for lai/sai          ',trim(map_flai)
     write(ndiag,*)' mapping for urb topography   ',trim(map_furbtopo)
     write(ndiag,*)' mapping for GDP              ',trim(map_fgdp)
+    write(ndiag,*)' mapping for Sector Water     ',trim(map_sectorWater)
     write(ndiag,*)' mapping for peatlands        ',trim(map_fpeat)
     write(ndiag,*)' mapping for soil depth       ',trim(map_fsoildepth)
     write(ndiag,*)' mapping for ag fire pk month ',trim(map_fabm)
@@ -851,7 +888,7 @@ program mksurfdat
        call check_ret(nf_open(trim(fsurdat), nf_write, ncid), subname)
        call check_ret(nf_set_fill (ncid, nf_nofill, omode), subname)
 
-       ! Write fields OTHER THAN lai, sai, heights, and urban parameters to netcdf surface dataset
+       ! Write fields OTHER THAN sectoral water usage, lai, sai, heights, and urban parameters to netcdf surface dataset
 
        call check_ret(nf_inq_varid(ncid, 'natpft', varid), subname)
        call check_ret(nf_put_var_int(ncid, varid, (/(n,n=natpft_lb,natpft_ub)/)), subname)
@@ -1044,6 +1081,14 @@ program mksurfdat
        write(6,*)'calling mklai'
        call mklai(ldomain, mapfname=map_flai, datfname=mksrf_flai, &
                ndiag=ndiag, ncido=ncid )
+
+       ! Make Sector Water data 
+       ! [dom_withd, dom_cons, liv_withd, liv_cons, elec_withd, elec_cons,
+       ! mfc_withd, mfc_cons, min_withd, min_cons] from 0.5x0.5 sectorWater dataset
+       ! Write to netcdf file is done inside the mksectorWater routine
+
+       call mksectorWater (ldomain, mapfname=map_sectorWater, datfname=mksrf_sectorWater, &
+               ndiag=ndiag, ncido=ncid)
 
        ! Close surface dataset
 
