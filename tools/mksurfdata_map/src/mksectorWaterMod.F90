@@ -86,6 +86,29 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
   real(r8), allocatable :: mmfc_cons_i(:,:)       ! monthly consumption manufacturing input 
   real(r8), allocatable :: mmin_cons_i(:,:)       ! monthly consumption mining input
 
+  real(r8) :: gdom_withd_o              ! output grid
+  real(r8) :: gliv_withd_o              ! output grid 
+  real(r8) :: gelec_withd_o             ! output grid 
+  real(r8) :: gmfc_withd_o              ! output grid 
+  real(r8) :: gmin_withd_o              ! output grid
+
+  real(r8) :: gdom_cons_o               ! output grid
+  real(r8) :: gliv_cons_o               ! output grid 
+  real(r8) :: gelec_cons_o              ! output grid 
+  real(r8) :: gmfc_cons_o               ! output grid 
+  real(r8) :: gmin_cons_o               ! output grid
+
+  real(r8) :: gdom_withd_i              ! output grid
+  real(r8) :: gliv_withd_i              ! output grid 
+  real(r8) :: gelec_withd_i             ! output grid 
+  real(r8) :: gmfc_withd_i              ! output grid 
+  real(r8) :: gmin_withd_i              ! output grid
+
+  real(r8) :: gdom_cons_i               ! output grid
+  real(r8) :: gliv_cons_i               ! output grid 
+  real(r8) :: gelec_cons_i              ! output grid 
+  real(r8) :: gmfc_cons_i               ! output grid 
+  real(r8) :: gmin_cons_i               ! output grid
 
 
   real(r8), allocatable :: frac_dst(:)      ! output fractions: same as frac_dst
@@ -345,24 +368,44 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
 
      garea_i    = 0.
      do ni = 1,ns_i
-        garea_i = garea_i + tgridmap%area_src(ni)
+        garea_i = garea_i + tgridmap%area_dst(ni)
      end do
 
-     glai_i(:)  = 0.
-     gsai_i(:)  = 0.
-     ghgtt_i(:) = 0.
-     ghgtb_i(:) = 0.
-     do l = 0, numpft_i - 1
-     do ni = 1, ns_i
-        glai_i(l)  = glai_i(l) + mlai_i(ni,l) *tgridmap%area_src(ni)*&
-             tdomain%mask(ni)*re**2
-        gsai_i(l)  = gsai_i(l) + msai_i(ni,l) *tgridmap%area_src(ni)*&
-             tdomain%mask(ni)*re**2
-        ghgtt_i(l) = ghgtt_i(l)+ mhgtt_i(ni,l)*tgridmap%area_src(ni)*&
-             tdomain%mask(ni)*re**2
-        ghgtb_i(l) = ghgtb_i(l)+ mhgtb_i(ni,l)*tgridmap%area_src(ni)*&
-             tdomain%mask(ni)*re**2
-     end do
+     gdom_withd_i  = 0.
+     gliv_withd_i  = 0.
+     gelec_withd_i = 0.
+     gmfc_withd_i  = 0.
+     gmin_withd_i  = 0.
+
+     gdom_cons_i  = 0.
+     gliv_cons_i  = 0.
+     gelec_cons_i = 0.
+     gmfc_cons_i  = 0.
+     gmin_cons_i  = 0.
+
+     do ni = 1,ns_i
+         gdom_withd_i  = gdom_withd_i + mdom_withd_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+         gliv_withd_i  = gliv_withd_i + mliv_withd_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+         gelec_withd_i  = gelec_withd_i + melec_withd_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+         gmfc_withd_i  = gmfc_withd_i + mmfc_withd_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+         gmin_withd_i  = gmin_withd_i + mmin_withd_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+
+         gdom_cons_i  = gdom_cons_i + mdom_cons_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+         gliv_cons_i  = gliv_cons_i + mliv_cons_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+         gelec_cons_i  = gelec_cons_i + melec_cons_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+         gmfc_cons_i  = gmfc_cons_i + mmfc_cons_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+         gmin_cons_i  = gmin_cons_i + mmin_cons_i(ni)*tgridmap%area_dst(ni)* &
+             frac_dst(ni)*re**2
+
      end do
 
      ! Output grid global area
@@ -409,22 +452,22 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
 
      end do
 
-     ! Comparison
+!      ! Comparison
 
-     write (ndiag,*)
-     write (ndiag,'(1x,1a1)') ('=',k=1)
-     write (ndiag,*) 'dom_withd output for month ',m
-     write (ndiag,'(1x,1a1)') ('=',k=1)
+!      write (ndiag,*)
+!      write (ndiag,'(1x,1a1)') ('=',k=1)
+!      write (ndiag,*) 'dom_withd output for month ',m
+!      write (ndiag,'(1x,1a1)') ('=',k=1)
 
-     write (ndiag,*)
-     write (ndiag,'(1x,1a1)') ('.',k=1)
-     write (ndiag,1001)
-1001 format (1x,'dom_withd input grid area output grid area',/ &
-             1x,3x,'     10**6 km**2','      10**6 km**2')
-     write (ndiag,'(1x,1a1)') ('.',k=1)
-     write (ndiag,*)
-     write (ndiag,1002), gdom_withd_i*1.e-06*1.e-02,gdom_withd_o*1.e-06*1.e-02
-1002 format (1x,i3,f16.3,f17.3)
+!      write (ndiag,*)
+!      write (ndiag,'(1x,1a1)') ('.',k=1)
+!      write (ndiag,1001)
+! 1001 format (1x,'dom_withd input grid area output grid area',/ &
+!              1x,3x,'     10**6 km**2','      10**6 km**2')
+!      write (ndiag,'(1x,1a1)') ('.',k=1)
+!      write (ndiag,*)
+!      write (ndiag,1002), gdom_withd_i*1.e-06*1.e-02,gdom_withd_o*1.e-06*1.e-02
+! 1002 format (1x,i3,f16.3,f17.3)
      
 
      write (6,*) 'Successfully made sector water withdrawal and consumption for month ', m
