@@ -244,43 +244,43 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
      
      call check_ret(nf_inq_varid (ncidi, 'withd_dom', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          mdom_i), subname)
+          mdom_withd_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'cons_dom', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          msai_i), subname)
+          mdom_cons_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'withd_liv', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          mdom_i), subname)
+          mliv_withd_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'cons_liv', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          msai_i), subname)
+          mliv_cons_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'withd_elec', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          mdom_i), subname)
+          melect_withd_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'cons_elec', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          msai_i), subname)
+          melec_cons_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'withd_mfc', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          mdom_i), subname)
+          mmfc_withd_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'cons_mfc', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          msai_i), subname)
+          mmfc_cons_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'withd_min', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          mdom_i), subname)
+          mmin_withd_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'cons_min', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          msai_i), subname)
+          mmin_cons_i), subname)
 
      mdom_withd_o(:)  = 0.
      mliv_withd_o(:)  = 0.
