@@ -62,29 +62,29 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
 !EOP
   type(gridmap_type)    :: tgridmap
   type(domain_type)    :: tdomain                 ! local domain
-  real(r8), allocatable :: mdom_withd_o(:,:)      ! monthly withdrawal domestic output
-  real(r8), allocatable :: mliv_withd_o(:,:)      ! monthly withdrawal livestock output
-  real(r8), allocatable :: melec_withd_o(:,:)     ! monthly withdrawal thermoelectric output
-  real(r8), allocatable :: mmfc_withd_o(:,:)      ! monthly withdrawal manufacturing output 
-  real(r8), allocatable :: mmin_withd_o(:,:)      ! monthly withdrawal mining output
+  real(r8), allocatable :: mdom_withd_o(:)      ! monthly withdrawal domestic output
+  real(r8), allocatable :: mliv_withd_o(:)      ! monthly withdrawal livestock output
+  real(r8), allocatable :: melec_withd_o(:)     ! monthly withdrawal thermoelectric output
+  real(r8), allocatable :: mmfc_withd_o(:)      ! monthly withdrawal manufacturing output 
+  real(r8), allocatable :: mmin_withd_o(:)      ! monthly withdrawal mining output
 
-  real(r8), allocatable :: mdom_withd_i(:,:)      ! monthly withdrawal domestic input
-  real(r8), allocatable :: mliv_withd_i(:,:)      ! monthly withdrawal livestock input
-  real(r8), allocatable :: melec_withd_i(:,:)     ! monthly withdrawal thermoelectric input
-  real(r8), allocatable :: mmfc_withd_i(:,:)      ! monthly withdrawal manufacturing input 
-  real(r8), allocatable :: mmin_withd_i(:,:)      ! monthly withdrawal mining input
+  real(r8), allocatable :: mdom_withd_i(:)      ! monthly withdrawal domestic input
+  real(r8), allocatable :: mliv_withd_i(:)      ! monthly withdrawal livestock input
+  real(r8), allocatable :: melec_withd_i(:)     ! monthly withdrawal thermoelectric input
+  real(r8), allocatable :: mmfc_withd_i(:)      ! monthly withdrawal manufacturing input 
+  real(r8), allocatable :: mmin_withd_i(:)      ! monthly withdrawal mining input
 
-  real(r8), allocatable :: mdom_cons_o(:,:)       ! monthly consumption domestic output
-  real(r8), allocatable :: mliv_cons_o(:,:)       ! monthly consumption livestock output
-  real(r8), allocatable :: melec_cons_o(:,:)      ! monthly consumption thermoelectric output
-  real(r8), allocatable :: mmfc_cons_o(:,:)       ! monthly consumption manufacturing output 
-  real(r8), allocatable :: mmin_cons_o(:,:)       ! monthly consumption mining output
+  real(r8), allocatable :: mdom_cons_o(:)       ! monthly consumption domestic output
+  real(r8), allocatable :: mliv_cons_o(:)       ! monthly consumption livestock output
+  real(r8), allocatable :: melec_cons_o(:)      ! monthly consumption thermoelectric output
+  real(r8), allocatable :: mmfc_cons_o(:)       ! monthly consumption manufacturing output 
+  real(r8), allocatable :: mmin_cons_o(:)       ! monthly consumption mining output
 
-  real(r8), allocatable :: mdom_cons_i(:,:)       ! monthly consumption domestic input
-  real(r8), allocatable :: mliv_cons_i(:,:)       ! monthly consumption livestock input
-  real(r8), allocatable :: melec_cons_i(:,:)      ! monthly consumption thermoelectric input
-  real(r8), allocatable :: mmfc_cons_i(:,:)       ! monthly consumption manufacturing input 
-  real(r8), allocatable :: mmin_cons_i(:,:)       ! monthly consumption mining input
+  real(r8), allocatable :: mdom_cons_i(:)       ! monthly consumption domestic input
+  real(r8), allocatable :: mliv_cons_i(:)       ! monthly consumption livestock input
+  real(r8), allocatable :: melec_cons_i(:)      ! monthly consumption thermoelectric input
+  real(r8), allocatable :: mmfc_cons_i(:)       ! monthly consumption manufacturing input 
+  real(r8), allocatable :: mmin_cons_i(:)       ! monthly consumption mining input
 
   real(r8) :: gdom_withd_o              ! output grid
   real(r8) :: gliv_withd_o              ! output grid 
