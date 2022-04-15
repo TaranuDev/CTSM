@@ -296,7 +296,7 @@ attributes from the config_cache.xml file (with keys converted to upper-case).
 >lnd/clm2/rawdata/mksrf_gdp_0.5x0_zerogdp.c200413.nc</mksrf_fgdp>
 
 <mksrf_sectorWater hgrid="0.5x0.5" lmask="nomask"
->/../../../../u/home/staranu/input_data/mksrf_sectorWater_0.5x0.5_simyr2000.c220413.nc</mksrf_sectorWater>
+>lnd/clm2/rawdata/mksrf_sectorWater_0.5x0.5_simyr2000.c220413.nc</mksrf_sectorWater>
 
 <mksrf_fpeat hgrid="0.5x0.5" lmask="nomask"
 >lnd/clm2/rawdata/mksrf_peatf_0.5x0.5_AVHRR_simyr2000.c130228.nc</mksrf_fpeat>
