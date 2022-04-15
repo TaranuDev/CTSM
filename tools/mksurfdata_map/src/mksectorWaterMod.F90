@@ -260,7 +260,7 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
 
      call check_ret(nf_inq_varid (ncidi, 'withd_elec', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
-          melect_withd_i), subname)
+          melec_withd_i), subname)
 
      call check_ret(nf_inq_varid (ncidi, 'cons_elec', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
@@ -298,17 +298,17 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
      call gridmap_calc_frac_dst(tgridmap, tdomain%mask, frac_dst)
 
      ! Do the mapping
-     call gridmap_areaave_srcmask(tgridmap, mdom_withd_i(:,l) , mdom_withd_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call gridmap_areaave_srcmask(tgridmap, mliv_withd_i(:,l) , mliv_withd_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call gridmap_areaave_srcmask(tgridmap, melec_withd_i(:,l) , melec_withd_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call gridmap_areaave_srcmask(tgridmap, mmfc_withd_i(:,l) , mmfc_withd_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call gridmap_areaave_srcmask(tgridmap, mmin_withd_i(:,l) , mmin_withd_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mdom_withd_i(:) , mdom_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mliv_withd_i(:) , mliv_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, melec_withd_i(:) , melec_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mmfc_withd_i(:) , mmfc_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mmin_withd_i(:) , mmin_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
 
-     call gridmap_areaave_srcmask(tgridmap, mdom_cons_i(:,l) , mdom_cons_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call gridmap_areaave_srcmask(tgridmap, mliv_cons_i(:,l) , mliv_cons_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call gridmap_areaave_srcmask(tgridmap, melec_cons_i(:,l) , melec_cons_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call gridmap_areaave_srcmask(tgridmap, mmfc_cons_i(:,l) , mmfc_cons_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call gridmap_areaave_srcmask(tgridmap, mmin_cons_i(:,l) , mmin_cons_o(:,l) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mdom_cons_i(:) , mdom_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mliv_cons_i(:) , mliv_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, melec_cons_i(:) , melec_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mmfc_cons_i(:) , mmfc_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mmin_cons_i(:) , mmin_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
 
      
      ! -----------------------------------------------------------------
