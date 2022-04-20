@@ -179,7 +179,7 @@ program mksurfdat
          mksrf_flai,               &
          mksrf_fdynuse,            &
          mksrf_fgdp,               &
-         mksrf_sectorWater,        &
+         mksrf_fsectorWater,        &
          mksrf_fpeat,              &
          mksrf_fsoildepth,         &
          mksrf_fabm,               &
@@ -211,7 +211,7 @@ program mksurfdat
          map_flai,                 &
          map_fharvest,             &
          map_fgdp,                 &
-         map_sectorWater,          &
+         map_fsectorWater,          &
          map_fpeat,                &
          map_fsoildepth,           &
          map_fabm,                 &
@@ -255,7 +255,7 @@ program mksurfdat
     !    mksrf_fhrvtyp -- harvest type dataset
     !    mksrf_fvocef  -- Volatile Organic Compund Emission Factor dataset
     !    mksrf_fgdp ----- GDP dataset
-    !    mksrf_sectorWater ----- sector water withdrawal and consumption dataset
+    !    mksrf_fsectorWater ----- sector water withdrawal and consumption dataset
     !    mksrf_fpeat ---- Peatland dataset
     !    mksrf_fsoildepth Soil depth dataset
     !    mksrf_fabm ----- Agricultural fire peak month dataset
@@ -279,7 +279,7 @@ program mksurfdat
     !    map_flai -------- Mapping for mksrf_flai
     !    map_fharvest ---- Mapping for mksrf_flai harvesting
     !    map_fgdp -------- Mapping for mksrf_fgdp
-    !    map_sectorWater -------- Mapping for mksrf_sectorWater
+    !    map_fsectorWater -------- Mapping for mksrf_fsectorWater
     !    map_fpeat ------- Mapping for mksrf_fpeat
     !    map_fsoildepth -- Mapping for mksrf_fsoildepth
     !    map_fabm -------- Mapping for mksrf_fabm
@@ -563,7 +563,7 @@ program mksurfdat
     write(ndiag,*) 'soil color from:             ',trim(mksrf_fsoicol)
     write(ndiag,*) 'VOC emission factors from:   ',trim(mksrf_fvocef)
     write(ndiag,*) 'gdp from:                    ',trim(mksrf_fgdp)
-    write(ndiag,*) 'sectoral water usage from:   ',trim(mksrf_sectorWater)
+    write(ndiag,*) 'sectoral water usage from:   ',trim(mksrf_fsectorWater)
     write(ndiag,*) 'peat from:                   ',trim(mksrf_fpeat)
     write(ndiag,*) 'soil depth from:             ',trim(mksrf_fsoildepth)
     write(ndiag,*) 'abm from:                    ',trim(mksrf_fabm)
@@ -584,7 +584,7 @@ program mksurfdat
     write(ndiag,*)' mapping for lai/sai          ',trim(map_flai)
     write(ndiag,*)' mapping for urb topography   ',trim(map_furbtopo)
     write(ndiag,*)' mapping for GDP              ',trim(map_fgdp)
-    write(ndiag,*)' mapping for Sector Water     ',trim(map_sectorWater)
+    write(ndiag,*)' mapping for Sector Water     ',trim(map_fsectorWater)
     write(ndiag,*)' mapping for peatlands        ',trim(map_fpeat)
     write(ndiag,*)' mapping for soil depth       ',trim(map_fsoildepth)
     write(ndiag,*)' mapping for ag fire pk month ',trim(map_fabm)
@@ -1087,7 +1087,7 @@ program mksurfdat
        ! mfc_withd, mfc_cons, min_withd, min_cons] from 0.5x0.5 sectorWater dataset
        ! Write to netcdf file is done inside the mksectorWater routine
 
-       call mksectorWater (ldomain, mapfname=map_sectorWater, datfname=mksrf_sectorWater, &
+       call mksectorWater (ldomain, mapfname=map_fsectorWater, datfname=mksrf_fsectorWater, &
                ndiag=ndiag, ncido=ncid)
 
        ! Close surface dataset
