@@ -205,7 +205,7 @@ attributes from the config_cache.xml file (with keys converted to upper-case).
 <mksrf_filename type="utp" >mksrf_furbtopo</mksrf_filename>
 <mksrf_filename type="tex" >mksrf_fsoitex</mksrf_filename>
 <mksrf_filename type="gdp" >mksrf_fgdp</mksrf_filename>
-<mksrf_filename type="sectorWater" >mksrf_sectorWater</mksrf_filename>
+<mksrf_filename type="sectorWater" >"/glade/u/home/staranu/input_data/rawdata/mksrf_sectorWater_0.5x0.5_simyr2000.c220413.nc"</mksrf_filename>
 <mksrf_filename type="peat">mksrf_fpeat</mksrf_filename>
 <mksrf_filename type="soildepth">mksrf_fsoildepth</mksrf_filename>
 <mksrf_filename type="abm" >mksrf_fabm</mksrf_filename>
@@ -295,8 +295,6 @@ attributes from the config_cache.xml file (with keys converted to upper-case).
 <mksrf_fgdp hgrid="0.5x0.5" lmask="nomask" sim_year="PtVg"
 >lnd/clm2/rawdata/mksrf_gdp_0.5x0_zerogdp.c200413.nc</mksrf_fgdp>
 
-<mksrf_sectorWater hgrid="0.5x0.5" lmask="nomask"
->lnd/clm2/rawdata/mksrf_sectorWater_0.5x0.5_simyr2000.c220413.nc</mksrf_sectorWater>
 
 <mksrf_fpeat hgrid="0.5x0.5" lmask="nomask"
 >lnd/clm2/rawdata/mksrf_peatf_0.5x0.5_AVHRR_simyr2000.c130228.nc</mksrf_fpeat>
