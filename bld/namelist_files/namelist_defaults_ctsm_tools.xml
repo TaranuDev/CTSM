@@ -205,7 +205,7 @@ attributes from the config_cache.xml file (with keys converted to upper-case).
 <mksrf_filename type="utp" >mksrf_furbtopo</mksrf_filename>
 <mksrf_filename type="tex" >mksrf_fsoitex</mksrf_filename>
 <mksrf_filename type="gdp" >mksrf_fgdp</mksrf_filename>
-<mksrf_filename type="sectorWater" >"/glade/u/home/staranu/input_data/rawdata/mksrf_sectorWater_0.5x0.5_simyr2000.nc"</mksrf_filename>
+<mksrf_filename type="sectorWater" >/glade/u/home/staranu/input_data/rawdata/mksrf_sectorWater_0.5x0.5_simyr2000.nc</mksrf_filename>
 <mksrf_filename type="peat">mksrf_fpeat</mksrf_filename>
 <mksrf_filename type="soildepth">mksrf_fsoildepth</mksrf_filename>
 <mksrf_filename type="abm" >mksrf_fabm</mksrf_filename>
