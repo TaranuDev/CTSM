@@ -1096,11 +1096,11 @@ subroutine mkpftAtt( ncid, dynlanduse, xtype )
           lev1name='lsmpft', lev2name='time', &
           long_name='monthly height bottom', units='meters')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='dom_withd', xtype=xtype,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='withd_dom', xtype=xtype,  &
           lev1name='lsmpft', lev2name='time', &
           long_name='monthly domestic water withdrawal', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='dom_cons', xtype=xtype,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='cons_dom', xtype=xtype,  &
           lev1name='lsmpft', lev2name='time', &
           long_name='monthly domestic water consumption', units='mm')
 

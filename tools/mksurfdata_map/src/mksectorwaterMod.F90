@@ -219,7 +219,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
 
   ! Determine number of dimensions in output by querying withd_dom
 
-  call check_ret(nf_inq_varid(ncido, 'dom_withd', varid), subname)
+  call check_ret(nf_inq_varid(ncido, 'withd_dom', varid), subname)
   call check_ret(nf_inq_varndims(ncido, varid, ndimso), subname)
   call check_ret(nf_inq_vardimid(ncido, varid, dimids), subname)
   if (ndimso ==4) then
