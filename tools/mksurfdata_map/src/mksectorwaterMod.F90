@@ -140,9 +140,11 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
   ! Obtain input grid info, read local fields
 
   ns_o = ldomain%ns
+  PRINT *, "ns_o:", ns_o
 
   call domain_read(tdomain,datfname)
   ns_i = tdomain%ns
+  PRINT *, "ns_i:", ns_i
 
   write (6,*) 'Open sectorwater file: ', trim(datfname)
   call check_ret(nf_open(datfname, 0, ncidi), subname)
@@ -214,6 +216,8 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call check_ret(nf_inq_dimlen(ncidi, dimids(2), leni(2)), subname)
   end if
   PRINT *, 'ndimsi:  ', ndimsi
+  PRINT *, 'leni(1): ', leni(1)
+  PRINT *, 'leni(2): ', leni(2) 
 
   ! Determine number of dimensions in output by querying withd_dom
 
@@ -246,7 +250,6 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      if (ndimsi == 3) begi(3)=m
      
      call check_ret(nf_inq_varid (ncidi, 'withd_dom', varid), subname)
-     PRINT *, 'varid:  ', varid
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mdom_withd_i), subname)
      PRINT *, 'nf_get_vara_double is working for withd_dom'
