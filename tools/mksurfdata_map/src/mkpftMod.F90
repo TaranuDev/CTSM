@@ -1096,34 +1096,34 @@ subroutine mkpftAtt( ncid, dynlanduse, xtype )
           lev1name='lsmpft', lev2name='time', &
           long_name='monthly height bottom', units='meters')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='withd_dom', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='withd_dom', xtype=nf_double, lev1name='time',  &
           long_name='monthly domestic water withdrawal', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='cons_dom', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='cons_dom', xtype=nf_double,  lev1name='time', &
           long_name='monthly domestic water consumption', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='withd_liv', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='withd_liv', xtype=nf_double, lev1name='time',  &
           long_name='monthly livestock water withdrawal', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='cons_liv', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='cons_liv', xtype=nf_double,  lev1name='time', &
           long_name='monthly livestock water consumption', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='withd_elec', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='withd_elec', xtype=nf_double, lev1name='time', &
           long_name='monthly thermoelectric water withdrawal', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='cons_elec', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='cons_elec', xtype=nf_double, lev1name='time', &
           long_name='monthly thermoelectric water consumption', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='withd_mfc', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='withd_mfc', xtype=nf_double, lev1name='time', &
           long_name='monthly manufacturing water withdrawal', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='cons_mfc', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='cons_mfc', xtype=nf_double, lev1name='time', &
           long_name='monthly manufacturing water consumption', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='withd_min', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='withd_min', xtype=nf_double, lev1name='time',  &
           long_name='monthly mining water withdrawal', units='mm')
 
-     call ncd_def_spatial_var(ncid=ncid, varname='cons_min', xtype=nf_double,  &
+     call ncd_def_spatial_var(ncid=ncid, varname='cons_min', xtype=nf_double, lev1name='time', &
           long_name='monthly mining water consumption', units='mm')
 
 
