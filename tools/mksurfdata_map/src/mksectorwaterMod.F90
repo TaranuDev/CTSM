@@ -150,7 +150,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
   call check_ret(nf_inq_dimlen(ncidi, dimid, ntim), subname)
 
   
-  if (ntim /= 12) then
+  if (ntim /= 11) then
      write(6,*)'MKsectorwater: must have 12 time samples on input data'
      call abort()
   endif
