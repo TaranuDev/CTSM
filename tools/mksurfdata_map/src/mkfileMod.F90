@@ -174,9 +174,9 @@ contains
     call check_ret(nf_put_att_text(ncid, NF_GLOBAL, &
          'gdp_raw_data_file_name', len_trim(str), trim(str)), subname)
 
-    str = get_filename(mksrf_fsectorWater)
+    str = get_filename(mksrf_fsectorwater)
     call check_ret(nf_put_att_text(ncid, NF_GLOBAL, &
-         'sectorWater_raw_data_file_name', len_trim(str), trim(str)), subname)
+         'sectorwater_raw_data_file_name', len_trim(str), trim(str)), subname)
 
     str = get_filename(mksrf_fpeat)
     call check_ret(nf_put_att_text(ncid, NF_GLOBAL, &
@@ -264,9 +264,9 @@ contains
     call check_ret(nf_put_att_text(ncid, NF_GLOBAL, &
          'map_gdp_file', len_trim(str), trim(str)), subname)
 
-    str = get_filename(map_fsectorWater)
+    str = get_filename(map_fsectorwater)
     call check_ret(nf_put_att_text(ncid, NF_GLOBAL, &
-         'map_sectorWater_file', len_trim(str), trim(str)), subname)
+         'map_sectorwater_file', len_trim(str), trim(str)), subname)
 
     str = get_filename(map_fpeat)
     call check_ret(nf_put_att_text(ncid, NF_GLOBAL, &

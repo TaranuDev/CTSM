@@ -1,8 +1,8 @@
-module mksectorWaterMod
+module mksectorwaterMod
 !-----------------------------------------------------------------------
 !BOP
 !
-! !MODULE: mksectorWater
+! !MODULE: mksectorwater
 !
 ! !DESCRIPTION:
 ! Make sectoral withdrawal/consumption data
@@ -21,17 +21,17 @@ module mksectorWaterMod
 
   private
 
-  public  :: mksectorWater
+  public  :: mksectorwater
 
 contains
 
 !-----------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: mksectorWater
+! !IROUTINE: mksectorwater
 !
 ! !INTERFACE:
-subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
+subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
 !
 ! !DESCRIPTION:
 ! Make sectoral water withdrawal/consumption data
@@ -127,7 +127,7 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
   real(r8) :: relerr = 0.00001              ! max error: sum overlap wts ne 1
   character(len=256) :: name                ! name of attribute
   character(len=256) :: unit                ! units of attribute
-  character(len= 32) :: subname = 'mksectorWater'
+  character(len= 32) :: subname = 'mksectorwater'
 !-----------------------------------------------------------------------
 
   write (6,*) 'Attempting to make sectoral water withdrawal/consumption data .....'
@@ -144,14 +144,14 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
   call domain_read(tdomain,datfname)
   ns_i = tdomain%ns
 
-  write (6,*) 'Open sectorWater file: ', trim(datfname)
+  write (6,*) 'Open sectorwater file: ', trim(datfname)
   call check_ret(nf_open(datfname, 0, ncidi), subname)
   call check_ret(nf_inq_dimid(ncidi, 'time', dimid), subname)
   call check_ret(nf_inq_dimlen(ncidi, dimid, ntim), subname)
 
   
   if (ntim /= 12) then
-     write(6,*)'MKSECTORWATER: must have 12 time samples on input data'
+     write(6,*)'MKsectorwater: must have 12 time samples on input data'
      call abort()
   endif
 
@@ -182,7 +182,7 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
            frac_dst(ns_o),     &
            stat=ier)
   if (ier /= 0) then
-     write(6,*)'mkSectorWater allocation error'; call abort()
+     write(6,*)'mksectorwater allocation error'; call abort()
   end if
 
   ! Determine mapping weights and map
@@ -509,5 +509,5 @@ subroutine mksectorWater(ldomain, mapfname, datfname, ndiag, ncido)
   call gridmap_clean(tgridmap)
   call domain_clean(tdomain) 
 
-end subroutine mksectorWater
-end module mksectorWaterMod
+end subroutine mksectorwater
+end module mksectorwaterMod
