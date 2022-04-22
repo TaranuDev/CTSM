@@ -252,38 +252,47 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call check_ret(nf_inq_varid (ncidi, 'cons_dom', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mdom_cons_i), subname)
+     PRINT *, 'nf_get_vara_double is working for cons_dom'
 
      call check_ret(nf_inq_varid (ncidi, 'withd_liv', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mliv_withd_i), subname)
+     PRINT *, 'nf_get_vara_double is working for withd_liv'
 
      call check_ret(nf_inq_varid (ncidi, 'cons_liv', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mliv_cons_i), subname)
+     PRINT *, 'nf_get_vara_double is working for cons_liv'
 
      call check_ret(nf_inq_varid (ncidi, 'withd_elec', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           melec_withd_i), subname)
+     PRINT *, 'nf_get_vara_double is working for withd_elec'
 
      call check_ret(nf_inq_varid (ncidi, 'cons_elec', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           melec_cons_i), subname)
+     PRINT *, 'nf_get_vara_double is working for cons_elec'
 
      call check_ret(nf_inq_varid (ncidi, 'withd_mfc', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mmfc_withd_i), subname)
+     PRINT *, 'nf_get_vara_double is working for withd_mfc'
 
      call check_ret(nf_inq_varid (ncidi, 'cons_mfc', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mmfc_cons_i), subname)
+     PRINT *, 'nf_get_vara_double is working for cons_mfc'
 
      call check_ret(nf_inq_varid (ncidi, 'withd_min', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mmin_withd_i), subname)
+     PRINT *, 'nf_get_vara_double is working for withd_min'
 
      call check_ret(nf_inq_varid (ncidi, 'cons_min', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mmin_cons_i), subname)
+     PRINT *, 'nf_get_vara_double is working for cons_min'
 
      mdom_withd_o(:)  = 0.
      mliv_withd_o(:)  = 0.
