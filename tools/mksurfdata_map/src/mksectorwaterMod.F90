@@ -241,6 +241,9 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
   end if
 
   PRINT *, 'ndimso:  ', ndimso
+  PRINT *, 'leno(1):  ', leno(1)
+  PRINT *, 'leno(2):  ', leno(2)
+
 
   ! Loop over months 
 
