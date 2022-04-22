@@ -150,7 +150,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
   call check_ret(nf_inq_dimlen(ncidi, dimid, ntim), subname)
 
   
-  if (ntim /= 11) then
+  if (ntim /= 12) then
      write(6,*)'MKsectorwater: must have 12 time samples on input data'
      call abort()
   endif
@@ -214,6 +214,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call check_ret(nf_inq_dimlen(ncidi, dimids(2), leni(2)), subname)
   end if
 
+  PRINT *, 'ndimsi:  ', ndimsi
   ! Determine number of dimensions in output by querying withd_dom
 
   call check_ret(nf_inq_varid(ncido, 'withd_dom', varid), subname)
