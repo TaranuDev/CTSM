@@ -214,8 +214,6 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call check_ret(nf_inq_dimlen(ncidi, dimids(2), leni(2)), subname)
   end if
   PRINT *, 'ndimsi:  ', ndimsi
-  PRINT *, 'dimids(1): ', dimids(1)
-  PRINT *, 'leni(1): ', leni(1)
 
   ! Determine number of dimensions in output by querying withd_dom
 
