@@ -324,6 +324,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call gridmap_areaave_srcmask(tgridmap, mmfc_cons_i(:) , mmfc_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
      call gridmap_areaave_srcmask(tgridmap, mmin_cons_i(:) , mmin_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
 
+     PRINT *, "regridding is done correctly"
      
      ! -----------------------------------------------------------------
      ! Output model resolution sectoral Water withdrawal/consumption data
@@ -334,41 +335,49 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      if (ndimso == 4) bego(4)=m
      if (ndimso == 3) bego(3)=m
 
-     call check_ret(nf_inq_varid(ncido, 'dom_withd', varid), subname)
+     call check_ret(nf_inq_varid(ncido, 'withd_dom', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mdom_withd_o), subname)
-     
-     call check_ret(nf_inq_varid(ncido, 'dom_cons', varid), subname)
+     PRINT *, "withd_dom saved to output file"
+
+     call check_ret(nf_inq_varid(ncido, 'cons_dom', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mdom_cons_o), subname)
+     PRINT *, "cons_dom saved to output file"
 
-     call check_ret(nf_inq_varid(ncido, 'liv_withd', varid), subname)
+     call check_ret(nf_inq_varid(ncido, 'withd_liv', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mliv_withd_o), subname)
-     
-     call check_ret(nf_inq_varid(ncido, 'liv_cons', varid), subname)
+     PRINT *, "withd_liv saved to output file"
+
+     call check_ret(nf_inq_varid(ncido, 'cons_liv', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mliv_cons_o), subname)
-     
+     PRINT *, "cons_dom saved to output file"
 
-     call check_ret(nf_inq_varid(ncido, 'elec_withd', varid), subname)
+     call check_ret(nf_inq_varid(ncido, 'withd_elec', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, melec_withd_o), subname)
-     
-     call check_ret(nf_inq_varid(ncido, 'elec_cons', varid), subname)
+     PRINT *, "withd_elec saved to output file"
+
+     call check_ret(nf_inq_varid(ncido, 'cons_elec', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, melec_cons_o), subname)
-     
+     PRINT *, "cons_elec saved to output file"
 
-     call check_ret(nf_inq_varid(ncido, 'mfc_withd', varid), subname)
+     call check_ret(nf_inq_varid(ncido, 'withd_mfc', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mmfc_withd_o), subname)
-     
-     call check_ret(nf_inq_varid(ncido, 'mfc_cons', varid), subname)
-     call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mmfc_cons_o), subname)
-     
+     PRINT *, "withd_mfc saved to output file"
 
-     call check_ret(nf_inq_varid(ncido, 'min_withd', varid), subname)
+     call check_ret(nf_inq_varid(ncido, 'cons_mfc', varid), subname)
+     call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mmfc_cons_o), subname)
+     PRINT *, "cons_mfc saved to output file"
+
+     call check_ret(nf_inq_varid(ncido, 'withd_min', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mmin_withd_o), subname)
-     
-     call check_ret(nf_inq_varid(ncido, 'min_cons', varid), subname)
+     PRINT *, "withd_min saved to output file"
+
+     call check_ret(nf_inq_varid(ncido, 'cons_min', varid), subname)
      call check_ret(nf_put_vara_double(ncido, varid, bego, leno, mmin_cons_o), subname)
+     PRINT *, "cons_min saved to output file"
 
      call check_ret(nf_inq_varid(ncido, 'time', varid), subname)
      call check_ret(nf_put_vara_int(ncido, varid, bego(ndimso), leno(ndimso), m), subname)
+     PRINT *, "time var saved to output file"
 
      call check_ret(nf_sync(ncido), subname)
 
