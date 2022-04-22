@@ -213,29 +213,32 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call check_ret(nf_inq_dimlen(ncidi, dimids(1), leni(1)), subname)
      call check_ret(nf_inq_dimlen(ncidi, dimids(2), leni(2)), subname)
   end if
+  PRINT *, 'ndimsi:  ', ndimsi
+  PRINT *, 'dimids(1): ', dimids(1)
+  PRINT *, 'leni(1): ', leni(1)
 
   ! Determine number of dimensions in output by querying withd_dom
 
-  call check_ret(nf_inq_varid(ncido, 'withd_dom', varid), subname)
-  call check_ret(nf_inq_varndims(ncido, varid, ndimso), subname)
-  call check_ret(nf_inq_vardimid(ncido, varid, dimids), subname)
-  if (ndimso ==4) then
-     bego(1) = 1
-     bego(2) = 1
-     bego(3) = 1
-     leno(4) = 1
-     call check_ret(nf_inq_dimlen(ncido, dimids(1), leno(1)), subname)
-     call check_ret(nf_inq_dimlen(ncido, dimids(2), leno(2)), subname)
-     call check_ret(nf_inq_dimlen(ncido, dimids(3), leno(3)), subname)
-  else if (ndimso== 3) then
-     bego(1) = 1
-     bego(2) = 1
-     leno(3) = 1
-     call check_ret(nf_inq_dimlen(ncido, dimids(1), leno(1)), subname)
-     call check_ret(nf_inq_dimlen(ncido, dimids(2), leno(2)), subname)
-  end if
+!   call check_ret(nf_inq_varid(ncido, 'MONTHLY_LAI', varid), subname)
+!   call check_ret(nf_inq_varndims(ncido, varid, ndimso), subname)
+!   call check_ret(nf_inq_vardimid(ncido, varid, dimids), subname)
+!   if (ndimso ==4) then
+!      bego(1) = 1
+!      bego(2) = 1
+!      bego(3) = 1
+!      leno(4) = 1
+!      call check_ret(nf_inq_dimlen(ncido, dimids(1), leno(1)), subname)
+!      call check_ret(nf_inq_dimlen(ncido, dimids(2), leno(2)), subname)
+!      call check_ret(nf_inq_dimlen(ncido, dimids(3), leno(3)), subname)
+!   else if (ndimso== 3) then
+!      bego(1) = 1
+!      bego(2) = 1
+!      leno(3) = 1
+!      call check_ret(nf_inq_dimlen(ncido, dimids(1), leno(1)), subname)
+!      call check_ret(nf_inq_dimlen(ncido, dimids(2), leno(2)), subname)
+!   end if
 
-  PRINT *, 'ndimso:  ', ndimso
+!   PRINT *, 'ndimso:  ', ndimso
   ! Loop over months 
 
   do m = 1, ntim
