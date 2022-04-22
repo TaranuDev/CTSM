@@ -296,6 +296,8 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
           mmin_cons_i), subname)
      PRINT *, 'nf_get_vara_double is working for cons_min'
 
+     PRINT *, "Till now everything seems to work well"
+
      mdom_withd_o(:)  = 0.
      mliv_withd_o(:)  = 0.
      melec_withd_o(:) = 0.
@@ -308,21 +310,35 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      mmfc_cons_o(:) = 0.
      mmin_cons_o(:) = 0.
 
+     PRINT *, "The output variables are initialized to 0"
      ! Obtain frac_dst
      call gridmap_calc_frac_dst(tgridmap, tdomain%mask, frac_dst)
+     PRINT *, "gridmap mask fractions calculated"
 
      ! Do the mapping
      call gridmap_areaave_srcmask(tgridmap, mdom_withd_i(:) , mdom_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"mdom_withd"
      call gridmap_areaave_srcmask(tgridmap, mliv_withd_i(:) , mliv_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"mliv_withd"
      call gridmap_areaave_srcmask(tgridmap, melec_withd_i(:) , melec_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"melec_withd"
      call gridmap_areaave_srcmask(tgridmap, mmfc_withd_i(:) , mmfc_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"mmfc_withd"
      call gridmap_areaave_srcmask(tgridmap, mmin_withd_i(:) , mmin_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"mmin_withd"
+
 
      call gridmap_areaave_srcmask(tgridmap, mdom_cons_i(:) , mdom_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"mdom_cons"
      call gridmap_areaave_srcmask(tgridmap, mliv_cons_i(:) , mliv_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"mliv_cons"
      call gridmap_areaave_srcmask(tgridmap, melec_cons_i(:) , melec_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"melec_cons"
      call gridmap_areaave_srcmask(tgridmap, mmfc_cons_i(:) , mmfc_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"mmfc_cons"
      call gridmap_areaave_srcmask(tgridmap, mmin_cons_i(:) , mmin_cons_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     PRINT *,"mmin_cons"
+
 
      PRINT *, "regridding is done correctly"
      
