@@ -214,7 +214,6 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call check_ret(nf_inq_dimlen(ncidi, dimids(2), leni(2)), subname)
   end if
 
-  PRINT *, 'ndimsi:  ', ndimsi
   ! Determine number of dimensions in output by querying withd_dom
 
   call check_ret(nf_inq_varid(ncido, 'withd_dom', varid), subname)
@@ -236,6 +235,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call check_ret(nf_inq_dimlen(ncido, dimids(2), leno(2)), subname)
   end if
 
+  PRINT *, 'ndimso:  ', ndimso
   ! Loop over months 
 
   do m = 1, ntim
@@ -244,8 +244,10 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      if (ndimsi == 3) begi(3)=m
      
      call check_ret(nf_inq_varid (ncidi, 'withd_dom', varid), subname)
+     PRINT *, 'varid:  ', varid
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mdom_withd_i), subname)
+     PRINT *, 'nf_get_vara_double is working for withd_dom'
 
      call check_ret(nf_inq_varid (ncidi, 'cons_dom', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
