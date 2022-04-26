@@ -359,12 +359,14 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
 
      ! PRINT *, "The output variables are initialized to 0"
      ! Obtain frac_dst
+     !allocate(frac_dst(ldomain%ns), stat=ier)
      call gridmap_calc_frac_dst(tgridmap, tdomain%mask, frac_dst)
+     call writenetcdffile(frac_dst)
      ! PRINT *, "gridmap mask fractions calculated"
 
      ! Do the mapping
      call gridmap_areaave_srcmask(tgridmap, mdom_withd_i , mdom_withd_o, nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
-     call writenetcdffile(mdom_withd_o)
+     !call writenetcdffile(mdom_withd_o)
      ! PRINT *,"mdom_withd"
      call gridmap_areaave_srcmask(tgridmap, mliv_withd_i(:) , mliv_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
      ! PRINT *,"mliv_withd"
