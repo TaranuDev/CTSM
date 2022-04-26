@@ -363,7 +363,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      ! PRINT *, "gridmap mask fractions calculated"
 
      ! Do the mapping
-     call gridmap_areaave_srcmask(tgridmap, mdom_withd_i(:) , mdom_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call gridmap_areaave_srcmask(tgridmap, mdom_withd_i , mdom_withd_o, nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
      call writenetcdffile(mdom_withd_o)
      ! PRINT *,"mdom_withd"
      call gridmap_areaave_srcmask(tgridmap, mliv_withd_i(:) , mliv_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
