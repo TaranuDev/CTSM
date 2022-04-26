@@ -90,6 +90,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
   character(len=*)  , intent(in) :: datfname     ! input data file name
   integer           , intent(in) :: ndiag        ! unit number for diag out
   integer           , intent(in) :: ncido        ! output netcdf file id
+
 !
 ! !CALLED FROM:
 ! subroutine mksrfdat in module mksrfdatMod
@@ -163,6 +164,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
   integer  :: bego(4),leno(4)               ! netCDF bounds
   integer  :: begi(4),leni(4)               ! netCDF bounds 
   integer  :: ntim                          ! number of input time samples
+  real(r8), allocatable :: mask_r8(:)  ! float of tdomain%mask
   integer  :: ier                           ! error status
   real(r8) :: relerr = 0.00001              ! max error: sum overlap wts ne 1
   character(len=256) :: name                ! name of attribute
@@ -232,6 +234,8 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
   call gridmap_mapread(tgridmap, mapfname)
 
   ! Error checks for domain and map consistencies
+
+  allocate(mask_r8(tdomain%ns), stat=ier)
 
   call domain_checksame( tdomain, ldomain, tgridmap )
 
@@ -361,7 +365,9 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      ! Obtain frac_dst
      !allocate(frac_dst(ldomain%ns), stat=ier)
      call gridmap_calc_frac_dst(tgridmap, tdomain%mask, frac_dst)
-     call writenetcdffile(frac_dst)
+     mask_r8 = tdomain%mask
+     call gridmap_check( tgridmap, mask_r8, frac_dst, subname )
+     !call writenetcdffile(frac_dst)
      ! PRINT *, "gridmap mask fractions calculated"
 
      ! Do the mapping
