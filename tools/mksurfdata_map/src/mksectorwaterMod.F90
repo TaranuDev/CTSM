@@ -29,7 +29,7 @@ contains
 subroutine writenetcdffile(array)
     use netcdf
     implicit none
-    real, intent(IN), dimension(:) :: array
+    real(r8), allocatable :: array(:)
 
     integer :: file_id, xdim_id
     integer :: array_id
