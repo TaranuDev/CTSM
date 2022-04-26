@@ -295,7 +295,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      call check_ret(nf_inq_varid (ncidi, 'withd_dom', varid), subname)
      call check_ret(nf_get_vara_double (ncidi, varid, begi(1:ndimsi), leni(1:ndimsi), &
           mdom_withd_i), subname)
-     call writenetcdffile(mdom_withd_i)
+     !call writenetcdffile(mdom_withd_i)
      !PRINT *, 'nf_get_vara_double is working for withd_dom'
 
      call check_ret(nf_inq_varid (ncidi, 'cons_dom', varid), subname)
@@ -364,6 +364,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
 
      ! Do the mapping
      call gridmap_areaave_srcmask(tgridmap, mdom_withd_i(:) , mdom_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
+     call writenetcdffile(mdom_withd_o)
      ! PRINT *,"mdom_withd"
      call gridmap_areaave_srcmask(tgridmap, mliv_withd_i(:) , mliv_withd_o(:) , nodata=0._r8, mask_src=tdomain%mask, frac_dst=frac_dst)
      ! PRINT *,"mliv_withd"
