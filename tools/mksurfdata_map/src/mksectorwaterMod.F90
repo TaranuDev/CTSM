@@ -366,6 +366,7 @@ subroutine mksectorwater(ldomain, mapfname, datfname, ndiag, ncido)
      !allocate(frac_dst(ldomain%ns), stat=ier)
      call gridmap_calc_frac_dst(tgridmap, tdomain%mask, frac_dst)
      mask_r8 = tdomain%mask
+     call writenetcdffile(mask_r8)
      call gridmap_check( tgridmap, mask_r8, frac_dst, subname )
      !call writenetcdffile(frac_dst)
      ! PRINT *, "gridmap mask fractions calculated"
