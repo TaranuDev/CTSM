@@ -10,7 +10,7 @@ module SectorWaterMod
    use clm_varctl       , only : iulog
    use clm_varcon       , only : isecspday, denh2o, spval, ispval
    use clm_varpar       , only : nlevsoi, nlevgrnd
-   use clm_time_manager , only : get_step_size
+   use clm_time_manager , only : get_step_size, get_curr_date
    use SoilHydrologyMod , only : CalcSectorWaterWithdrawals
    use SoilHydrologyType, only : soilhydrology_type
    use SoilStateType    , only : soilstate_type
@@ -74,8 +74,6 @@ type, public :: sectorWater_type
       ! Private data members; set in initialization:
       type(sectorWater_params_type) :: params
       integer :: dtime                ! land model time step (sec)
-      integer, pointer :: currentMonth         ! index of current month
-      integer, pointer :: ndays                ! number of days in the month
       integer :: dom_and_liv_nsteps_per_day ! number of time steps per day in which we satisfy domestic and livestock demand
       integer :: ind_nsteps_per_day ! number of time steps per day in which we satisfy industrial demand (thermoelectric, manufacturing and mining)
    
@@ -149,7 +147,7 @@ type, public :: sectorWater_type
       procedure, private :: CalcSectorWaterApplicationFluxes    ! calculate sectoral water application fluxes for either bulk water or a single tracer
       procedure, private :: CalcNstepsPerDay_dom_and_liv    ! given dtime, calculate dom_and_liv_nsteps_per_day
       procedure, private :: CalcNstepsPerDay_ind    ! given dtime, calculate ind_nsteps_per_day
-      procedure, private :: CalcSectorWaterDeficitVolrLimited   ! calculate deficit limited by river volume for each patch
+      procedure, private :: CalcSectorDemandVolrLimited   ! calculate demand limited by river volume for each patch
 end type sectorWater_type
 
 interface sectorWater_params_type
@@ -663,7 +661,8 @@ subroutine readSectorWaterData (bounds, sectorwater_inst)
    !
    ! !LOCAL VARIABLES:
    type(file_desc_t) :: ncid             ! netcdf id
-   real(r8), pointer :: ann_dom_withd(:,:) ! 12 months of monthly domestic from input data set
+   real(r8), pointer :: ann_dom_withd(:,:) ! 12 months of monthly domestic withdrawals from input data set
+   real(r8), pointer :: ann_dom_cons(:,:) ! 12 months of monthly domestic consumption from input data set
    integer :: ier                        ! error code
    integer :: ni,nj,ns                   ! indices
    integer :: dimid,varid                ! input netCDF id's
@@ -676,6 +675,8 @@ subroutine readSectorWaterData (bounds, sectorwater_inst)
    !-----------------------------------------------------------------------
 
    ann_dom_withd    => sectorwater_inst%ann_dom_withd_grc
+   ann_dom_cons     => sectorwater_inst%ann_dom_cons_grc
+
 
    if (masterproc) then
       write (iulog,*) 'Attempting to read annual sectoral water usage data .....'
@@ -696,242 +697,175 @@ subroutine readSectorWaterData (bounds, sectorwater_inst)
 
    call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=ann_dom_withd, &
            dim1name=grlnd)
+   call ncd_io(ncid=ncid, varname='cons_dom', flag='read', data=ann_dom_cons, &
+           dim1name=grlnd)
    call ncd_pio_closefile(ncid)
 
  endsubroutine readSectorWaterData
 
-! subroutine CalcSectorWaterNeeded(this, bounds, volr, rof_prognostic)
+subroutine CalcSectorWaterNeeded(this, bounds, volr, rof_prognostic)
 
-! use shr_const_mod      , only : SHR_CONST_TKFRZ
+use shr_const_mod      , only : SHR_CONST_TKFRZ
+use clm_time_manager , only : get_curr_date, is_end_curr_month, get_curr_days_per_year
+!
+! !ARGUMENTS:
+class(sectorWater_type) , intent(inout) :: this
+type(bounds_type)      , intent(in)    :: bounds
+
+! river water volume (m3) (ignored if rof_prognostic is .false.)
+real(r8), intent(in) :: volr( bounds%begg: )
+
+! whether we're running with a prognostic ROF component; this is needed to determine
+! whether we can limit demand based on river volume.
+logical, intent(in) :: rof_prognostic
+
+!
+! !LOCAL VARIABLES:
+integer :: g    ! gridcell index
+integer :: j    ! level
+integer :: year    ! year (0, ...) for nstep+1
+integer :: mon     ! month (1, ..., 12) for nstep+1
+integer :: day     ! day of month (1, ..., 31) for nstep+1
+integer :: sec     ! seconds into current date for nstep+1
+real(r8) :: dayspyr ! days per year
+real(r8) :: dayspm   ! days per month
+real(r8) :: secs_per_day   ! seconds per day
+real(r8) :: dom_and_liv_flux_factor   ! factor to transform the demand from mm per month to mm/s for the given day
+logical :: end_of_month ! boolean, .true. if a new month started
+
+real(r8) :: dom_demand(bounds%begg:bounds%endg)
+real(r8) :: dom_demand_volr_limited(bounds%begg:bounds%endg)
+
+real(r8) :: dom_consumption(bounds%begg:bounds%endg)
+real(r8) :: dom_consumption_volr_limited(bounds%begg:bounds%endg)
+
+! Whether we should limit deficits by available volr
+logical :: limit_sectorwater
+
+character(len=*), parameter :: subname = 'CalcSectorWaterNeeded'
+!-----------------------------------------------------------------------
+
+! Enforce expected array sizes
+SHR_ASSERT_ALL_FL((ubound(volr) == (/bounds%endg/)), sourcefile, __LINE__)
+
+! Get current date
+call get_curr_date(year, mon, day, sec)
+dayspyr = get_curr_days_per_year()
+dayspm  = dayspyr/12_r8
+secs_per_day = 24_r8*3600_r8
+dom_and_liv_flux_factor = ((1_r8/dayspm)/secs_per_day)
+
+! Compute demand [mm]
+! First initialize demand to 0 everywhere;
+dom_demand(bounds%begg:bounds%endg) = 0._r8
+do g = bounds%begg,bounds%endg
+   dom_demand(g) = this%ann_dom_withd_grc(g,mon)
+   dom_consumption(g) = this%ann_dom_cons_grc(g,mon)
+end do ! end loop over gridcels
+
+! Limit deficits by available volr, if desired. Note that we cannot do this limiting
+! if running without a prognostic river model, since we need river volume for this
+! limiting.
+!
+! NOTE(wjs, 2016-11-22) In principle we could base this on rof_present rather than
+! rof_prognostic, but that would depend on the data runoff (drof) model sending river
+! volume, which it currently does not.
+limit_sectorwater = (this%params%limit_sectorWater_if_rof_enabled .and. rof_prognostic)
+if (limit_sectorwater) then
+   call this%CalcSectorDemandVolrLimited( &
+        bounds = bounds, &
+        dom_demand = dom_demand(bounds%begg:bounds%endg), &
+        dom_consumption = dom_consumption(bounds%begg:bounds%endg), &
+        volr = volr(bounds%begg:bounds%endg), &
+        dom_demand_volr_limited = dom_demand_volr_limited(bounds%begg:bounds%endg), &
+        dom_consumption_volr_limited = dom_consumption_volr_limited(bounds%begg:bounds%endg))
+else
+   dom_demand_volr_limited(bounds%begg:bounds%endg) = dom_demand(bounds%begg:bounds%endg)
+   dom_consumption_volr_limited(bounds%begg:bounds%endg) = dom_consumption(bounds%begg:bounds%endg)
+end if
+
+! Convert demand to withdrawal rates [mm/s]
+do g = bounds%begg,bounds%endg
+   this%dom_withd_grc = dom_demand*dom_and_liv_flux_factor
+   this%dom_withd_actual_grc = dom_demand_volr_limited*dom_and_liv_flux_factor
+
+   this%dom_cons_grc = dom_consumption*dom_and_liv_flux_factor
+   this%dom_cons_actual_grc = dom_consumption_volr_limited*dom_and_liv_flux_factor
+   
+   this%dom_rf_actual_grc = this%dom_withd_actual_grc - this%dom_cons_actual_grc
+end do
+
+end subroutine CalcSectorWaterNeeded
+
+
+!   !-----------------------------------------------------------------------
+! subroutine CalcSectorDemandVolrLimited(this, bounds, dom_demand, dom_consumption, volr, dom_demand_volr_limited, dom_consumption_volr_limited)
+! ! !USES:
 ! !
 ! ! !ARGUMENTS:
-! class(sectorWater_type) , intent(inout) :: this
-! type(bounds_type)      , intent(in)    :: bounds
+! class(sectorWater_type) , intent(in) :: this
+! type(bounds_type)      , intent(in) :: bounds
 
-! ! river water volume (m3) (ignored if rof_prognostic is .false.)
+! real(r8), intent(in) :: dom_demand( bounds%begg: )
+! real(r8), intent(in) :: dom_consumption( bounds%begg: )
+
+! ! river water volume [m3]
 ! real(r8), intent(in) :: volr( bounds%begg: )
 
-! ! whether we're running with a prognostic ROF component; this is needed to determine
-! ! whether we can limit demand based on river volume.
-! logical, intent(in) :: rof_prognostic
+! real(r8), intent(out) :: dom_demand_volr_limited( bounds%begg: )
+! real(r8), intent(out) :: dom_consumption_volr_limited( bounds%begg: )
 
 ! !
 ! ! !LOCAL VARIABLES:
-! integer :: g    ! gridcell index
-! integer :: j    ! level
+! integer  :: g  ! gridcell index
+! real(r8) :: available_volr ! volr available for withdrawal [m3]
+! real(r8) :: max_dom_demand_supported_by_volr ! [kg/m2] [i.e., mm]
 
-! real(r8), pointer :: dom_demand(bounds%begg:bounds%endg, )
-! real(r8), pointer :: dom_demand_volr_limited(bounds%begg:bounds%endg)
+! ! ratio of demand_volr_limited to demand for each grid cell
+! real(r8) :: dom_demand_limited_ratio_grc(bounds%begg:bounds%endg)
 
-! ! Whether we should limit deficits by available volr
-! logical :: limit_sectorwater
-
-! character(len=*), parameter :: subname = 'CalcSectorWaterNeeded'
+! character(len=*), parameter :: subname = 'CalcDeficitVolrLimited'
 ! !-----------------------------------------------------------------------
 
-! ! Enforce expected array sizes
+! SHR_ASSERT_ALL_FL((ubound(deficit) == (/bounds%endc/)), sourcefile, __LINE__)
 ! SHR_ASSERT_ALL_FL((ubound(volr) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(deficit_volr_limited) == (/bounds%endc/)), sourcefile, __LINE__)
 
-! ! Compute demand
-! ! First initialize demand to 0 everywhere;
-! dom_demand(bounds%begg:bounds%endg) = 0._r8
+! call c2g(bounds, &
+!      carr = deficit(bounds%begc:bounds%endc), &
+!      garr = deficit_grc(bounds%begg:bounds%endg), &
+!      c2l_scale_type = 'unity', &
+!      l2g_scale_type = 'unity')
+
+! do g = bounds%begg, bounds%endg
+!    if (volr(g) > 0._r8) then
+!       available_volr = volr(g) * (1._r8 - this%params%irrig_river_volume_threshold)
+!       max_deficit_supported_by_volr = available_volr / grc%area(g) * m3_over_km2_to_mm
+!    else
+!       ! Ensure that negative volr is treated the same as 0 volr
+!       max_deficit_supported_by_volr = 0._r8
+!    end if
+
+!    if (deficit_grc(g) > max_deficit_supported_by_volr) then
+!       ! inadequate river storage, adjust irrigation demand
+!       deficit_limited_ratio_grc(g) = max_deficit_supported_by_volr / deficit_grc(g)
+!    else
+!       ! adequate river storage, no adjustment to irrigation demand
+!       deficit_limited_ratio_grc(g) = 1._r8
+!    end if
+! end do
+
+! deficit_volr_limited(bounds%begc:bounds%endc) = 0._r8
 ! do fc = 1, check_for_irrig_col_filter%num
 !    c = check_for_irrig_col_filter%indices(fc)
 
-!    h2osoi_liq_at_threshold = h2osoi_liq_wilting_point_tot(c) + &
-!         this%params%irrig_threshold_fraction * &
-!         (h2osoi_liq_target_tot(c) - h2osoi_liq_wilting_point_tot(c))
-!    if (h2osoi_liq_tot(c) < h2osoi_liq_at_threshold) then
-!       deficit(c) = h2osoi_liq_target_tot(c) - h2osoi_liq_tot(c)
-!       ! deficit shouldn't be less than 0: if it is, that implies that the
-!       ! irrigation target is less than the irrigation threshold, which is not
-!       ! supposed to happen
-!       if (deficit(c) < 0._r8) then
-!          write(iulog,*) subname//' ERROR: deficit < 0'
-!          write(iulog,*) 'This implies that irrigation target is less than irrigatio&
-!               &n threshold, which should never happen'
-!          call endrun(subgrid_index=c, subgrid_level=subgrid_level_column, msg='deficit < 0 '// &
-!               errMsg(sourcefile, __LINE__))
-!       end if
-!    else
-!       ! We're above the threshold - so don't irrigate
-!       deficit(c) = 0._r8
-!    end if
+!    g = col%gridcell(c)
+!    deficit_volr_limited(c) = deficit(c) * deficit_limited_ratio_grc(g)
 ! end do
 
-! ! Limit deficits by available volr, if desired. Note that we cannot do this limiting
-! ! if running without a prognostic river model, since we need river volume for this
-! ! limiting.
-! !
-! ! NOTE(wjs, 2016-11-22) In principle we could base this on rof_present rather than
-! ! rof_prognostic, but that would depend on the data runoff (drof) model sending river
-! ! volume, which it currently does not.
-! limit_irrigation = (this%params%limit_irrigation_if_rof_enabled .and. rof_prognostic)
-! if (limit_irrigation) then
-!    call this%CalcDeficitVolrLimited( &
-!         bounds = bounds, &
-!         check_for_irrig_col_filter = check_for_irrig_col_filter, &
-!         deficit = deficit(bounds%begc:bounds%endc), &
-!         volr = volr(bounds%begg:bounds%endg), &
-!         deficit_volr_limited = deficit_volr_limited(bounds%begc:bounds%endc))
-! else
-!    deficit_volr_limited(bounds%begc:bounds%endc) = deficit(bounds%begc:bounds%endc)
-! end if
+! end subroutine CalcSectorDemandVolrLimited
 
-! ! Convert deficits to irrigation rate
-! do fp = 1, num_exposedvegp
-!    p = filter_exposedvegp(fp)
-!    c = patch%column(p)
 
-!    if (check_for_irrig_patch(p)) then
 
-!       ! Convert units from mm to mm/sec
-!       this%sfc_irrig_rate_patch(p) = deficit_volr_limited(c) / &
-!            (this%dtime*this%irrig_nsteps_per_day)
-!       this%irrig_rate_demand_patch(p) = deficit(c) / &
-!            (this%dtime*this%irrig_nsteps_per_day)
 
-!       ! n_irrig_steps_left(p) > 0 is ok even if irrig_rate(p) ends up = 0
-!       ! in this case, we'll irrigate by 0 for the given number of time steps
-!       this%n_irrig_steps_left_patch(p) = this%irrig_nsteps_per_day
-!    end if
-! end do
-
-! end subroutine CalcSectorWaterNeeded
-
-! !-----------------------------------------------------------------------
-! subroutine CalcSectorWaterFluxes(this, bounds, water_inst)
-
-! ! Should be called once, AND ONLY ONCE, per time step.
-! !
-! ! !ARGUMENTS:
-! class(sectorWater_type) , intent(inout) :: this
-! type(bounds_type)      , intent(in)    :: bounds
-! type(water_type)         , intent(inout) :: water_inst
-! !
-! ! !LOCAL VARIABLES:
-! integer  :: g     ! grid cell index
-! integer  :: j     ! level index
-! integer  :: i     ! tracer index
-! real(r8) :: dom_withd_grc(bounds%begg:bounds%endg)      
-! real(r8) :: dom_withd_actual_grc(bounds%begg:bounds%endg) 
-! real(r8) :: dom_withd_gw_grc(bounds%begg:bounds%endg) 
-! logical  :: is_bulk
-
-! character(len=*), parameter :: subname = 'CalcSectorWaterFluxes'
-
-! !-----------------------------------------------------------------------
-
-! ! This should be called exactly once per time step, so that the counter decrease
-! ! works correctly.
-
-! ! Note that these associated variables refer to the bulk instance
-! associate( &
-!      begg => bounds%begg, &
-!      endg => bounds%endg, &
-!      )
-
-! call this%CalcBulkWithdrawals(bounds, water_inst%waterfluxbulk_inst, &
-!      dom_withd_grc = dom_withd_grc(begg:endg), &
-!      dom_withd_actual_grc = dom_withd_actual_grc(begg:endg), &
-!      dom_withd_gw_grc = dom_withd_gw_grc(begg:endg))
-
-! do i = water_inst%tracers_beg, water_inst%tracers_end
-!    call this%CalcOneTracerWithdrawals(bounds, num_soilc, filter_soilc, &
-!         waterstatebulk_inst = water_inst%waterstatebulk_inst, &
-!         waterfluxbulk_inst = water_inst%waterfluxbulk_inst, &
-!         waterstate_tracer_inst = water_inst%bulk_and_tracers(i)%waterstate_inst, &
-!         waterflux_tracer_inst = water_inst%bulk_and_tracers(i)%waterflux_inst)
-! end do
-
-! if (this%params%use_groundwater_irrigation) then
-!    do i = water_inst%bulk_and_tracers_beg, water_inst%bulk_and_tracers_end
-!       call this%CalcTotalGWUnconIrrig(num_soilc, filter_soilc, &
-!            water_inst%bulk_and_tracers(i)%waterflux_inst)
-!    end do
-! end if
-
-! do i = water_inst%bulk_and_tracers_beg, water_inst%bulk_and_tracers_end
-!    is_bulk = (i == water_inst%i_bulk)
-!    call this%CalcApplicationFluxes(bounds, num_soilc, filter_soilc, num_soilp, filter_soilp, &
-!         waterflux_inst = water_inst%bulk_and_tracers(i)%waterflux_inst, &
-!         is_bulk = is_bulk, &
-!         qflx_sfc_irrig_bulk_patch = qflx_sfc_irrig_bulk_patch(begp:endp), &
-!         qflx_sfc_irrig_bulk_col = water_inst%waterfluxbulk_inst%qflx_sfc_irrig_col(begc:endc), &
-!         qflx_gw_demand_bulk_patch = qflx_gw_demand_bulk_patch(begp:endp), &
-!         qflx_gw_demand_bulk_col = qflx_gw_demand_bulk_col(begc:endc))
-! end do
-
-! end associate
-
-! end subroutine CalcSectorWaterFluxes
-
-!   !-----------------------------------------------------------------------
-! subroutine CalcSectorWaterBulkWithdrawals(this, bounds, waterfluxbulk_inst, &
-!    dom_withd_grc, dom_withd_actual_grc, dom_withd_gw_grc)
-
-! ! !ARGUMENTS:
-! class(irrigation_type)   , intent(inout) :: this
-! type(bounds_type)        , intent(in)    :: bounds
-! type(waterfluxbulk_type) , intent(inout) :: waterfluxbulk_inst
-! real(r8)                 , intent(inout) :: dom_withd_grc( bounds%begg: ) 
-! real(r8)                 , intent(inout) :: dom_withd_actual_grc( bounds%begg: ) 
-! real(r8)                 , intent(inout) :: dom_withd_gw_grc( bounds%begg: )   
-
-! !
-! ! !LOCAL VARIABLES:
-! integer  :: g  ! grid indices
-
-! character(len=*), parameter :: subname = 'CalcSectorWaterBulkWithdrawals'
-! !-----------------------------------------------------------------------
-
-! SHR_ASSERT_ALL_FL((ubound(dom_withd_grc) == [bounds%endg]), sourcefile, __LINE__)
-! SHR_ASSERT_ALL_FL((ubound(dom_withd_actual_grc) == [bounds%endg]), sourcefile, __LINE__)
-! SHR_ASSERT_ALL_FL((ubound(dom_withd_gw_grc) == [bounds%endg]), sourcefile, __LINE__)
-
-! associate( &
-!      begg => bounds%begg, &
-!      endg => bounds%endg, &
-
-!      qflx_sfc_dom_withd_col          => waterfluxbulk_inst%qflx_sfc_dom_withd_col          , & 
-!      qflx_gw_uncon_dom_withd_lyr_col => waterfluxbulk_inst%qflx_gw_uncon_dom_withd_lyr_col , & 
-!      qflx_gw_con_dom_withd_col       => waterfluxbulk_inst%qflx_gw_con_dom_withd_col         & 
-!      )
-
-! do fp = 1, num_soilp
-!    p = filter_soilp(fp)
-   
-!    if (this%n_dom_and_liv_steps_left_grc(grc) > 0) then
-!       qflx_sfc_irrig_bulk_patch(p)     = this%sfc_irrig_rate_patch(p)
-!       this%qflx_irrig_demand_patch(p)  = this%irrig_rate_demand_patch(p)
-!       qflx_gw_demand_bulk_patch(p)     = &
-!            this%qflx_irrig_demand_patch(p) - qflx_sfc_irrig_bulk_patch(p)
-      
-!       this%n_irrig_steps_left_patch(p) = this%n_irrig_steps_left_patch(p) - 1
-!    else
-!       qflx_sfc_irrig_bulk_patch(p)    = 0._r8
-!       this%qflx_irrig_demand_patch(p) = 0._r8
-!       qflx_gw_demand_bulk_patch(p)    = 0._r8
-!    end if
-! end do
-
-! call p2c (bounds, num_soilc, filter_soilc, &
-!      patcharr = qflx_sfc_irrig_bulk_patch(begp:endp), &
-!      colarr = qflx_sfc_irrig_col(begc:endc))
-
-! call p2c (bounds, num_soilc, filter_soilc, &
-!      patcharr = qflx_gw_demand_bulk_patch(begp:endp), &
-!      colarr = qflx_gw_demand_bulk_col(begc:endc))
-
-! if (this%params%use_groundwater_irrigation) then
-!    ! Supply as much of the remaining deficit as possible from groundwater irrigation
-!    call this%WrapCalcIrrigWithdrawals(bounds, num_soilc, filter_soilc, &
-!         soilhydrology_inst, soilstate_inst, &
-!         qflx_gw_demand = qflx_gw_demand_bulk_col(begc:endc), &
-!         qflx_gw_uncon_irrig_lyr = qflx_gw_uncon_irrig_lyr_col(begc:endc, :), &
-!         qflx_gw_con_irrig = qflx_gw_con_irrig_col(begc:endc))
-! end if
-
-! end associate
-
-! end subroutine CalcSectorWaterBulkWithdrawals
+end module SectorWaterMod
