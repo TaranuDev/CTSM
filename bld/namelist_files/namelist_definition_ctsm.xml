@@ -489,10 +489,64 @@ Cannot be combined with lower_boundary_condition = 3 or 4
 Irrigation method used if not specified on surface dataset
 </entry>
 
+<entry id="dom_and_liv_start_time" type="integer" category="clm_physics"
+       group="sectorwater_inparm" valid_values="">
+Time of day when domestic and livestock withdrawal begins (0 = midnight).
+We start applying the withdrawal in the time step FOLLOWING this time.
+</entry>
+
+<entry id="ind_start_time" type="integer" category="clm_physics"
+       group="sectorwater_inparm" valid_values="">
+Time of day when industrial (thermoelectric, manufacturing and mining) withdrawal begins (0 = midnight).
+We start applying the withdrawal in the time step FOLLOWING this time.
+</entry>
+
+<entry id="dom_and_liv_length" type="integer" category="clm_physics"
+       group="sectorwater_inparm" valid_values="">
+Desired amount of time to perform domestic and livestock withdrawal per day (sec).
+Actual time may differ if this is not a multiple of dtime.
+</entry>
+
+<entry id="ind_length" type="integer" category="clm_physics"
+       group="sectorwater_inparm" valid_values="">
+Desired amount of time to perform industrial (thermoelectric, manufacturing and mining) withdrawal per day (sec).
+Actual time may differ if this is not a multiple of dtime.
+</entry>
+
+<entry id="sectorwater_river_volume_threshold" type="real" category="clm_physics"
+       group="sectorwater_inparm" valid_values="">
+Threshold for river water volume below which sectoral withdrawal is shut off (as a fraction of available river water), if limit_sectorwater_if_rof_enabled is .true.
+A threshold of 0 means allow all river water to be used;
+a threshold of 0.1 means allow 90% of the river volume to be used; etc.
+</entry>
+
+<entry id="limit_sectorwater_if_rof_enabled" type="logical" category="clm_physics"
+       group="sectorwater_inparm" valid_values="" >
+If TRUE, limit sectoral water withdrawal when river storage drops below a threshold.
+Only applies if using an active runoff (ROF) model; otherwise, river storage-based limitation
+is turned off regardless of the setting of this namelist variable.
+</entry>
+
+<entry id="use_groundwater_sectorwater" type="logical" category="clm_physics"
+       group="sectorwater_inparm" valid_values="" >
+If TRUE, supply sectoral withdrawal from groundwater (in addition to surface water).
+
+Can only be set if limit_sectorwater_if_rof_enabled is true (otherwise
+groundwater extraction is never invoked).
+
+Cannot be combined with lower_boundary_condition = 3 or 4
+</entry>
+
 <entry id="irrigate" type="logical" category="clm_physics"
        group="clm_inparm"  >
 If TRUE, irrigation will be active.
 </entry> 
+
+<entry id="sectorwater" type="logical" category="clm_physics"
+       group="clm_inparm"  >
+If TRUE, sector water usage will be active.
+</entry> 
+
 
 <entry id="crop_fsat_equals_zero" type="logical" category="clm_physics"
        group="clm_inparm"  >

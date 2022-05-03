@@ -10,7 +10,7 @@ module clm_varpar
   use spmdMod      , only: masterproc
   use clm_varctl   , only: use_extralakelayers
   use clm_varctl   , only: use_c13, use_c14
-  use clm_varctl   , only: iulog, use_crop, create_crop_landunit, irrigate
+  use clm_varctl   , only: iulog, use_crop, create_crop_landunit, sectorwater, irrigate
   use clm_varctl   , only: use_vichydro, rundef
   use clm_varctl   , only: soil_layerstruct_predefined
   use clm_varctl   , only: soil_layerstruct_userdefined

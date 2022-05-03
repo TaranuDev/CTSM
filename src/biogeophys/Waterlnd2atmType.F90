@@ -36,6 +36,16 @@ module Waterlnd2atmType
      real(r8), pointer :: qflx_rofice_grc    (:)   ! rof ice forcing, grc level
      real(r8), pointer :: qflx_liq_from_ice_col(:) ! liquid runoff from converted ice runoff
      real(r8), pointer :: qirrig_grc         (:)   ! irrigation flux
+     real(r8), pointer :: qdom_withd_grc     (:)   ! sfc domestic actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qdom_rf_grc        (:)   ! domestic return flow
+     real(r8), pointer :: qliv_withd_grc     (:)   ! sfc livestock actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qliv_rf_grc        (:)   ! livestock return flow
+     real(r8), pointer :: qelec_withd_grc    (:)   ! sfc thermoelectric actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qelec_rf_grc       (:)   ! thermoelectric return flow
+     real(r8), pointer :: qmfc_withd_grc     (:)   ! sfc manufacturing actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qmfc_rf_grc        (:)   ! manufacturing return flow
+     real(r8), pointer :: qmin_withd_grc     (:)   ! sfc mining actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qmin_rf_grc        (:)   ! mining return flow
 
    contains
 
@@ -136,7 +146,47 @@ contains
          container = tracer_vars, &
          bounds = bounds, subgrid_level = subgrid_level_gridcell, &
          ival=ival)
-
+     call AllocateVar1d(var = this%qdom_withd_grc, name = 'qdom_withd_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qdom_rf_grc, name = 'qdom_rf_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qliv_withd_grc, name = 'qliv_withd_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qliv_rf_grc, name = 'qliv_rf_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qelec_withd_grc, name = 'qelec_withd_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qelec_rf_grc, name = 'qelec_rf_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qmfc_withd_grc, name = 'qmfc_withd_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qmfc_rf_grc, name = 'qmfc_rf_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qmin_withd_grc, name = 'qmin_withd_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     call AllocateVar1d(var = this%qmin_rf_grc, name = 'qmin_rf_grc', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_gridcell, &
+         ival=ival)
+     
   end subroutine InitAllocate
 
   !------------------------------------------------------------------------

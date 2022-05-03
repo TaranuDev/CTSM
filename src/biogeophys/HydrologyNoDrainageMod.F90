@@ -18,6 +18,7 @@ Module HydrologyNoDrainageMod
   use SoilStateType     , only : soilstate_type
   use SaturatedExcessRunoffMod, only : saturated_excess_runoff_type
   use InfiltrationExcessRunoffMod, only : infiltration_excess_runoff_type
+  use SectorWaterMod, only : sectorwater_type
   use IrrigationMod, only : irrigation_type
   use SnowHydrologyMod     , only : UpdateQuantitiesForNewSnow, RemoveSnowFromThawedWetlands, InitializeExplicitSnowPack
   use SnowHydrologyMod     , only : SnowCompaction, CombineSnowLayers, DivideSnowLayers, SnowCapping
@@ -39,12 +40,70 @@ Module HydrologyNoDrainageMod
   save
   !
   ! !PUBLIC MEMBER FUNCTIONS:
+  public  :: CalcAndWithdrawSectorWaterFluxes ! Calculates sectorwal water withdrawal, consumption and return flow fluxes, and perform the withdrawal from groundwater (for surface part taken from river)
   public  :: CalcAndWithdrawIrrigationFluxes  ! Calculates irrigation withdrawal fluxes and withdraws from groundwater
   public  :: HandleNewSnow                    ! Handle new snow falling on the ground
   public  :: HydrologyNoDrainage              ! Calculates soil/snow hydrology without drainage
   !-----------------------------------------------------------------------
 
 contains
+  !-----------------------------------------------------------------------
+subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwater_inst, water_inst, volr, rof_prognostic)
+!
+! !DESCRIPTION:
+! Calculates sector water withdrawal fluxes and withdraws from groundwater
+!
+! !USES:
+! use SoilHydrologyMod       , only : WithdrawGroundwaterSectorWater
+use clm_time_manager       , only : is_beg_curr_day
+!
+! !ARGUMENTS:
+type(bounds_type)              , intent(in)    :: bounds
+type(soilhydrology_type)       , intent(in)    :: soilhydrology_inst
+type(sectorwater_type)         , intent(inout) :: sectorwater_inst
+type(water_type)               , intent(inout) :: water_inst
+
+! river water volume (m3) (ignored if rof_prognostic is .false.)
+real(r8), intent(in) :: volr( bounds%begg: )
+
+! whether we're running with a prognostic ROF component; this is needed to determine
+! whether we can limit irrigation based on river volume.
+logical, intent(in) :: rof_prognostic
+
+! !LOCAL VARIABLES:
+integer :: i  ! tracer index
+
+character(len=*), parameter :: subname = 'CalcAndWithdrawSectorWaterFluxes'
+!-----------------------------------------------------------------------
+
+! Read withdrawal and consumption data from input surfdata
+! Compute the withdrawal, consumption and return flow (expected and actual)
+! To limit computation time, call this subroutine only once a day
+if (is_beg_curr_day()) then
+   call sectorwater_inst%CalcSectorWaterNeeded(bounds, volr, rof_prognostic)
+endif
+
+do g = bounds%begg, bounds%endg
+   water_inst%waterlnd2atmbulk_inst%qdom_withd_grc(g) = sectorwater_inst%dom_withd_actual_grc(g)
+   water_inst%waterlnd2atmbulk_inst%qdom_rf_grc(g) = sectorwater_inst%dom_rf_actual_grc(g)
+
+   water_inst%waterlnd2atmbulk_inst%qliv_withd_grc(g) = sectorwater_inst%liv_withd_actual_grc(g)
+   water_inst%waterlnd2atmbulk_inst%qliv_rf_grc(g) = sectorwater_inst%liv_rf_actual_grc(g)
+
+   water_inst%waterlnd2atmbulk_inst%qelec_withd_grc(g) = sectorwater_inst%elec_withd_actual_grc(g)
+   water_inst%waterlnd2atmbulk_inst%qelec_rf_grc(g) = sectorwater_inst%elec_rf_actual_grc(g)
+
+   water_inst%waterlnd2atmbulk_inst%qmfc_withd_grc(g) = sectorwater_inst%mfc_withd_actual_grc(g)
+   water_inst%waterlnd2atmbulk_inst%qmfc_rf_grc(g) = sectorwater_inst%mfc_rf_actual_grc(g)
+
+   water_inst%waterlnd2atmbulk_inst%qmin_withd_grc(g) = sectorwater_inst%min_withd_actual_grc(g)
+   water_inst%waterlnd2atmbulk_inst%qmin_rf_grc(g) = sectorwater_inst%min_rf_actual_grc(g)
+
+end do
+
+end subroutine CalcAndWithdrawSectorWaterFluxes
+
+
 
   !-----------------------------------------------------------------------
   subroutine CalcAndWithdrawIrrigationFluxes(bounds, &
