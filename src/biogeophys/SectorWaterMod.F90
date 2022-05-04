@@ -808,7 +808,7 @@ character(len=*), parameter :: subname = 'CalcSectorWaterNeeded'
 !-----------------------------------------------------------------------
 
 ! Enforce expected array sizes
-SHR_ASSERT_ALL_FL((ubound(volr) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(volr) == (/bounds%endg/)), sourcefile, __LINE__)
 
 ! Get current date
 call get_curr_date(year, mon, day, sec)
@@ -971,38 +971,38 @@ subroutine CalcSectorDemandVolrLimited(this, bounds, dom_demand, dom_consumption
 class(sectorwater_type) , intent(in) :: this
 type(bounds_type)      , intent(in) :: bounds
 
-real(r8), intent(in) :: dom_demand( bounds%begg: )
-real(r8), intent(in) :: dom_consumption( bounds%begg: )
+real(r8), intent(in) :: dom_demand( bounds%begg:bounds%endg)
+real(r8), intent(in) :: dom_consumption( bounds%begg:bounds%endg)
 
-real(r8), intent(in) :: liv_demand( bounds%begg: )
-real(r8), intent(in) :: liv_consumption( bounds%begg: )
+real(r8), intent(in) :: liv_demand( bounds%begg:bounds%endg)
+real(r8), intent(in) :: liv_consumption( bounds%begg:bounds%endg)
 
-real(r8), intent(in) :: elec_demand( bounds%begg: )
-real(r8), intent(in) :: elec_consumption( bounds%begg: )
+real(r8), intent(in) :: elec_demand( bounds%begg:bounds%endg)
+real(r8), intent(in) :: elec_consumption( bounds%begg:bounds%endg)
 
-real(r8), intent(in) :: mfc_demand( bounds%begg: )
-real(r8), intent(in) :: mfc_consumption( bounds%begg: )
+real(r8), intent(in) :: mfc_demand( bounds%begg:bounds%endg)
+real(r8), intent(in) :: mfc_consumption( bounds%begg:bounds%endg)
 
-real(r8), intent(in) :: min_demand( bounds%begg: )
-real(r8), intent(in) :: min_consumption( bounds%begg: )
+real(r8), intent(in) :: min_demand( bounds%begg:bounds%endg)
+real(r8), intent(in) :: min_consumption( bounds%begg:bounds%endg)
 
 ! river water volume [m3]
-real(r8), intent(in) :: volr( bounds%begg: )
+real(r8), intent(in) :: volr( bounds%begg:bounds%endg)
 
-real(r8), intent(out) :: dom_demand_volr_limited( bounds%begg: )
-real(r8), intent(out) :: dom_consumption_volr_limited( bounds%begg: )
+real(r8), intent(out) :: dom_demand_volr_limited( bounds%begg:bounds%endg)
+real(r8), intent(out) :: dom_consumption_volr_limited( bounds%begg:bounds%endg)
 
-real(r8), intent(out) :: liv_demand_volr_limited( bounds%begg: )
-real(r8), intent(out) :: liv_consumption_volr_limited( bounds%begg: )
+real(r8), intent(out) :: liv_demand_volr_limited( bounds%begg:bounds%endg)
+real(r8), intent(out) :: liv_consumption_volr_limited( bounds%begg:bounds%endg)
 
-real(r8), intent(out) :: elec_demand_volr_limited( bounds%begg: )
-real(r8), intent(out) :: elec_consumption_volr_limited( bounds%begg: )
+real(r8), intent(out) :: elec_demand_volr_limited( bounds%begg:bounds%endg)
+real(r8), intent(out) :: elec_consumption_volr_limited( bounds%begg:bounds%endg)
 
-real(r8), intent(out) :: mfc_demand_volr_limited( bounds%begg: )
-real(r8), intent(out) :: mfc_consumption_volr_limited( bounds%begg: )
+real(r8), intent(out) :: mfc_demand_volr_limited( bounds%begg:bounds%endg)
+real(r8), intent(out) :: mfc_consumption_volr_limited( bounds%begg:bounds%endg)
 
-real(r8), intent(out) :: min_demand_volr_limited( bounds%begg: )
-real(r8), intent(out) :: min_consumption_volr_limited( bounds%begg: )
+real(r8), intent(out) :: min_demand_volr_limited( bounds%begg:bounds%endg)
+real(r8), intent(out) :: min_consumption_volr_limited( bounds%begg:bounds%endg)
 
 !
 ! !LOCAL VARIABLES:
@@ -1021,27 +1021,27 @@ real(r8) :: min_demand_limited_ratio_grc(bounds%begg:bounds%endg)
 character(len=*), parameter :: subname = 'CalcSectorDemandVolrLimited'
 !-----------------------------------------------------------------------
 
-SHR_ASSERT_ALL_FL((ubound(dom_demand) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(dom_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(liv_demand) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(liv_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(elec_demand) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(elec_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(mfc_demand) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(mfc_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(min_demand) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(min_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(volr) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(dom_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(dom_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(liv_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(liv_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(elec_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(elec_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(mfc_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(mfc_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(min_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
-SHR_ASSERT_ALL_FL((ubound(min_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! ! SHR_ASSERT_ALL_FL((ubound(dom_demand) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(dom_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(liv_demand) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(liv_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(elec_demand) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(elec_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(mfc_demand) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(mfc_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(min_demand) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(min_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(volr) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(dom_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(dom_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(liv_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(liv_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(elec_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(elec_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(mfc_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(mfc_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(min_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
+! SHR_ASSERT_ALL_FL((ubound(min_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
 
 
 do g = bounds%begg, bounds%endg
