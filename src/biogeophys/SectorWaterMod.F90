@@ -697,7 +697,17 @@ subroutine ReadSectorWaterData (this, bounds, mon)
    integer :: nlon_i                     ! number of input data longitudes
    integer :: nlat_i                     ! number of input data latitudes
    logical :: isgrid2d                   ! true => file is 2d
-   real(r8), pointer :: test(:)          ! test read from input files
+   real(r8), pointer :: mon_dom_withd(:) ! monthly domestic withdrawal read from input files
+   real(r8), pointer :: mon_dom_cons(:)  ! monthly domestic consumption read from input files
+   real(r8), pointer :: mon_liv_withd(:) ! monthly livestock withdrawal read from input files
+   real(r8), pointer :: mon_liv_cons(:)  ! monthly livestock consumption read from input files
+   real(r8), pointer :: mon_elec_withd(:) ! monthly thermoelectric withdrawal read from input files
+   real(r8), pointer :: mon_elec_cons(:)  ! monthly thermoelectric consumption read from input files
+   real(r8), pointer :: mon_mfc_withd(:) ! monthly manufacturing withdrawal read from input files
+   real(r8), pointer :: mon_mfc_cons(:)  ! monthly manufacturing consumption read from input files
+   real(r8), pointer :: mon_min_withd(:) ! monthly mining withdrawal read from input files
+   real(r8), pointer :: mon_min_cons(:)  ! monthly mining consumption read from input files
+
    character(len=256) :: locfn           ! local file name
    character(len=32)  :: subname = 'ReadSectorWaterData'
    !-----------------------------------------------------------------------
@@ -708,7 +718,16 @@ subroutine ReadSectorWaterData (this, bounds, mon)
 
 
    allocate(&
-         test(bounds%begg:bounds%endg), &
+         mon_dom_withd(bounds%begg:bounds%endg), &
+         mon_dom_cons(bounds%begg:bounds%endg), &
+         mon_liv_withd(bounds%begg:bounds%endg), &
+         mon_liv_cons(bounds%begg:bounds%endg), &
+         mon_elec_withd(bounds%begg:bounds%endg), &
+         mon_elec_cons(bounds%begg:bounds%endg), &
+         mon_mfc_withd(bounds%begg:bounds%endg), &
+         mon_mfc_cons(bounds%begg:bounds%endg), &
+         mon_min_withd(bounds%begg:bounds%endg), &
+         mon_min_cons(bounds%begg:bounds%endg), &
          stat=ier)
          
    ! Determine necessary indices
@@ -724,35 +743,50 @@ subroutine ReadSectorWaterData (this, bounds, mon)
       call endrun(msg=errMsg(sourcefile, __LINE__))
    end if
 
-   !call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=this%input_mon_dom_withd_grc(bounds%begg:bounds%endg), &
-   !        dim1name=grlnd, nt=mon)
-   call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=test, &
+   call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=mon_dom_withd, &
            dim1name=grlnd, nt=mon)        
-   call ncd_io(ncid=ncid, varname='cons_dom', flag='read', data=this%input_mon_dom_cons_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='cons_dom', flag='read', data=mon_dom_cons, &
            dim1name=grlnd, nt=mon)
 
-   call ncd_io(ncid=ncid, varname='withd_liv', flag='read', data=this%input_mon_liv_withd_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='withd_liv', flag='read', data=mon_liv_withd, &
            dim1name=grlnd, nt=mon)
-   call ncd_io(ncid=ncid, varname='cons_liv', flag='read', data=this%input_mon_liv_cons_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='cons_liv', flag='read', data=mon_liv_cons, &
            dim1name=grlnd, nt=mon)
 
-   call ncd_io(ncid=ncid, varname='withd_elec', flag='read', data=this%input_mon_elec_withd_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='withd_elec', flag='read', data=mon_elec_withd, &
            dim1name=grlnd, nt=mon)
-   call ncd_io(ncid=ncid, varname='cons_elec', flag='read', data=this%input_mon_elec_cons_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='cons_elec', flag='read', data=mon_elec_cons, &
            dim1name=grlnd, nt=mon)     
            
-   call ncd_io(ncid=ncid, varname='withd_mfc', flag='read', data=this%input_mon_mfc_withd_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='withd_mfc', flag='read', data=mon_mfc_withd, &
            dim1name=grlnd, nt=mon)
-   call ncd_io(ncid=ncid, varname='cons_mfc', flag='read', data=this%input_mon_mfc_cons_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='cons_mfc', flag='read', data=mon_mfc_cons, &
            dim1name=grlnd, nt=mon)
 
-   call ncd_io(ncid=ncid, varname='withd_min', flag='read', data=this%input_mon_min_withd_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='withd_min', flag='read', data=mon_min_withd, &
            dim1name=grlnd, nt=mon)
-   call ncd_io(ncid=ncid, varname='cons_min', flag='read', data=this%input_mon_min_cons_grc(bounds%begg:bounds%endg), &
+   call ncd_io(ncid=ncid, varname='cons_min', flag='read', data=mon_min_cons, &
            dim1name=grlnd, nt=mon)
 
    call ncd_pio_closefile(ncid)
 
+   do g = bounds%begg,bounds%endg
+      this%input_mon_dom_withd_grc(g) = mon_dom_withd(g)
+      this%input_mon_dom_cons_grc(g)  = mon_dom_cons(g)
+
+      this%input_mon_liv_withd_grc(g) = mon_liv_withd(g)
+      this%input_mon_liv_cons_grc(g)  = mon_liv_cons(g)
+      
+      this%input_mon_elec_withd_grc(g) = mon_elec_withd(g)
+      this%input_mon_elec_cons_grc(g)  = mon_elec_cons(g)
+      
+      this%input_mon_mfc_withd_grc(g) = mon_mfc_withd(g)
+      this%input_mon_mfc_cons_grc(g)  = mon_mfc_cons(g)
+      
+      this%input_mon_min_withd_grc(g) = mon_min_withd(g)
+      this%input_mon_min_cons_grc(g)  = mon_min_cons(g)
+      
+   end do
 endsubroutine ReadSectorWaterData
 
 subroutine CalcSectorWaterNeeded(this, bounds, volr, rof_prognostic)
