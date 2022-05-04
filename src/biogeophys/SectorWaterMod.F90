@@ -718,7 +718,7 @@ subroutine ReadSectorWaterData (this, bounds, mon)
       call endrun(msg=errMsg(sourcefile, __LINE__))
    end if
 
-   call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=this%input_mon_dom_withd_grc(bounds%begg:bounds%endg), &
+   call ncd_io(flag='read', ncid=ncid, varname='withd_dom', data=this%input_mon_dom_withd_grc(bounds%begg:bounds%endg), &
            dim1name=grlnd, nt=mon)
    call ncd_io(ncid=ncid, varname='cons_dom', flag='read', data=this%input_mon_dom_cons_grc(bounds%begg:bounds%endg), &
            dim1name=grlnd, nt=mon)
