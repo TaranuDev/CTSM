@@ -70,9 +70,9 @@ end type sectorwater_params_type
 
 
 type, public :: sectorwater_type
-      private
-
+      !private
       ! Private data members; set in initialization:
+      
       type(sectorwater_params_type) :: params
       integer :: dtime                ! land model time step (sec)
       integer :: dom_and_liv_nsteps_per_day ! number of time steps per day in which we satisfy domestic and livestock demand
@@ -135,7 +135,7 @@ type, public :: sectorwater_type
       ! procedure, public :: Restart
       procedure, public :: ReadSectorWaterData
       ! procedure, public :: CalcSectorWaterFluxes
-      ! procedure, public :: CalcSectorWaterNeeded
+      procedure, public :: CalcSectorWaterNeeded
       procedure, public :: Clean => SectorWaterClean ! deallocate memory
 
       ! Private routines
@@ -1174,6 +1174,8 @@ end do
 
 end subroutine CalcSectorDemandVolrLimited
 
+
+subroutine UpdateWaterFields(this, bounds, water_inst)
 
 
 

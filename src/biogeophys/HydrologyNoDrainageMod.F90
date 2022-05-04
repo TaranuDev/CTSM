@@ -58,6 +58,7 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwa
 use clm_time_manager       , only : is_beg_curr_day
 !
 ! !ARGUMENTS:
+integer  :: g  ! gridcell index
 type(bounds_type)              , intent(in)    :: bounds
 type(soilhydrology_type)       , intent(in)    :: soilhydrology_inst
 type(sectorwater_type)         , intent(inout) :: sectorwater_inst
