@@ -697,6 +697,7 @@ subroutine ReadSectorWaterData (this, bounds, mon)
    integer :: nlon_i                     ! number of input data longitudes
    integer :: nlat_i                     ! number of input data latitudes
    logical :: isgrid2d                   ! true => file is 2d
+   real(r8), pointer :: test(:)          ! test read from input files
    character(len=256) :: locfn           ! local file name
    character(len=32)  :: subname = 'ReadSectorWaterData'
    !-----------------------------------------------------------------------
@@ -705,6 +706,11 @@ subroutine ReadSectorWaterData (this, bounds, mon)
       write (iulog,*) 'Attempting to read annual sectoral water usage data .....'
    end if
 
+
+   allocate(&
+         test(bounds%begg:bounds%endg), &
+         stat=ier)
+         
    ! Determine necessary indices
    call getfil(fsurdat, locfn, 0)
    call ncd_pio_openfile (ncid, trim(locfn), 0)
@@ -718,8 +724,10 @@ subroutine ReadSectorWaterData (this, bounds, mon)
       call endrun(msg=errMsg(sourcefile, __LINE__))
    end if
 
-   call ncd_io(flag='read', ncid=ncid, varname='withd_dom', data=this%input_mon_dom_withd_grc(bounds%begg:bounds%endg), &
-           dim1name=grlnd, nt=mon)
+   !call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=this%input_mon_dom_withd_grc(bounds%begg:bounds%endg), &
+   !        dim1name=grlnd, nt=mon)
+   call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=test, &
+           dim1name=grlnd, nt=mon)        
    call ncd_io(ncid=ncid, varname='cons_dom', flag='read', data=this%input_mon_dom_cons_grc(bounds%begg:bounds%endg), &
            dim1name=grlnd, nt=mon)
 
