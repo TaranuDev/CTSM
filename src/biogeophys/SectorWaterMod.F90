@@ -26,6 +26,7 @@ module SectorWaterMod
    use PatchType        , only : patch                
    use subgridAveMod    , only : p2c, c2g
    use filterColMod     , only : filter_col_type, col_filter_from_logical_array
+   use ncdio_pio
    !
 
  implicit none
@@ -678,6 +679,7 @@ subroutine ReadSectorWaterData (this, bounds, mon)
    use domainMod       , only : ldomain
    use clm_varcon      , only : grlnd
    use ncdio_pio        , only : file_desc_t
+   use spmdMod        , only : masterproc, mpicom
 
    ! !ARGUMENTS:
    class(sectorwater_type), intent(inout) :: this
