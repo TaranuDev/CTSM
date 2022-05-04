@@ -691,6 +691,7 @@ subroutine ReadSectorWaterData (this, bounds, mon)
    type(file_desc_t) :: ncid             ! netcdf id
    
    integer :: ier                        ! error code
+   integer :: g    ! gridcell index
    integer :: ni,nj,ns                   ! indices
    integer :: dimid,varid                ! input netCDF id's
    integer :: ntim                       ! number of input data time samples
@@ -1127,7 +1128,7 @@ do g = bounds%begg, bounds%endg
       mfc_demand_limited_ratio_grc(g)  = max_demand_supported_by_volr / mfc_demand(g)
       min_demand_limited_ratio_grc(g)  = 0._r8
 
-   else if (min_demand(g) > (max_demand_supported_by_volr - dom_demand(g) - liv_demand(g) - elec_demand(g) - mfc_demand(g)))
+   else if (min_demand(g) > (max_demand_supported_by_volr - dom_demand(g) - liv_demand(g) - elec_demand(g) - mfc_demand(g))) then
       dom_demand_limited_ratio_grc(g)  = 1._r8
       liv_demand_limited_ratio_grc(g)  = 1._r8
       elec_demand_limited_ratio_grc(g) = 1._r8
