@@ -11,7 +11,7 @@ module SectorWaterMod
    use clm_varcon       , only : isecspday, denh2o, spval, ispval
    use clm_varpar       , only : nlevsoi, nlevgrnd
    use clm_time_manager , only : get_step_size, get_curr_date
-   use SoilHydrologyMod , only : CalcSectorWaterWithdrawals
+   !use SoilHydrologyMod , only : CalcSectorWaterWithdrawals
    use SoilHydrologyType, only : soilhydrology_type
    use SoilStateType    , only : soilstate_type
    use SoilWaterRetentionCurveMod, only : soil_water_retention_curve_type
@@ -131,10 +131,10 @@ type, public :: sectorwater_type
       ! COMPILER_BUG(wjs, 2014-10-15, pgi 14.7) Add an "SectorWater" prefix to some  generic routines like "Init"
       ! (without this workaround, pgi compilation fails in restFileMod)
       procedure, public :: Init => SectorWaterInit
-      procedure, public :: Restart
+      ! procedure, public :: Restart
       procedure, public :: ReadSectorWaterData
-      procedure, public :: CalcSectorWaterFluxes
-     ! procedure, public :: CalcSectorWaterNeeded
+      ! procedure, public :: CalcSectorWaterFluxes
+      ! procedure, public :: CalcSectorWaterNeeded
       procedure, public :: Clean => SectorWaterClean ! deallocate memory
 
       ! Private routines
@@ -147,8 +147,8 @@ type, public :: sectorwater_type
       !procedure, private :: CalcSectorWaterOneTracerWithdrawals ! calculate sectoral water withdrawals for one water tracer
       !procedure, private :: CalcSectorWaterTotalGWUncon   ! calculate total sectoral water withdrawal flux from the unconfined aquifer, for either bulk or one water tracer
       !procedure, private :: CalcSectorWaterApplicationFluxes    ! calculate sectoral water application fluxes for either bulk water or a single tracer
-      procedure, private :: CalcNstepsPerDay_dom_and_liv    ! given dtime, calculate dom_and_liv_nsteps_per_day
-      procedure, private :: CalcNstepsPerDay_ind    ! given dtime, calculate ind_nsteps_per_day
+      !procedure, private :: CalcNstepsPerDay_dom_and_liv    ! given dtime, calculate dom_and_liv_nsteps_per_day
+      !procedure, private :: CalcNstepsPerDay_ind    ! given dtime, calculate ind_nsteps_per_day
       procedure, private :: CalcSectorDemandVolrLimited   ! calculate demand limited by river volume for each patch
 end type sectorwater_type
 
@@ -531,8 +531,10 @@ contains
    !-----------------------------------------------------------------------
 
    this%dtime = get_step_size()
-   this%dom_and_liv_nsteps_per_day = this%Calc_dom_and_liv_NstepsPerDay(this%dtime)
-   this%ind_nsteps_per_day = this%Calc_ind_NstepsPerDay(this%dtime)
+   !this%dom_and_liv_nsteps_per_day = this%Calc_dom_and_liv_NstepsPerDay(this%dtime)
+   !this%ind_nsteps_per_day = this%Calc_ind_NstepsPerDay(this%dtime)
+   this%ind_nsteps_per_day = 0._r8
+   this%dom_and_liv_nsteps_per_day = 0._r8
 
    this%dom_withd_actual_grc(bounds%begg:bounds%endg)  = 0._r8
    this%liv_withd_actual_grc(bounds%begg:bounds%endg)  = 0._r8
@@ -675,7 +677,8 @@ subroutine ReadSectorWaterData (this, bounds, mon)
    use clm_varctl      , only : fsurdat
    use domainMod       , only : ldomain
    use clm_varcon      , only : grlnd
-   
+   use ncdio_pio        , only : file_desc_t
+
    ! !ARGUMENTS:
    class(sectorwater_type), intent(inout) :: this
    type(bounds_type)      , intent(in)    :: bounds
@@ -693,7 +696,7 @@ subroutine ReadSectorWaterData (this, bounds, mon)
    integer :: nlat_i                     ! number of input data latitudes
    logical :: isgrid2d                   ! true => file is 2d
    character(len=256) :: locfn           ! local file name
-   character(len=32) :: subname = 'ReadSectorWaterData'
+   character(len=32)  :: subname = 'ReadSectorWaterData'
    !-----------------------------------------------------------------------
 
    if (masterproc) then
