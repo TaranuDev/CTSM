@@ -1174,9 +1174,4 @@ end do
 
 end subroutine CalcSectorDemandVolrLimited
 
-
-subroutine UpdateWaterFields(this, bounds, water_inst)
-
-
-
 end module SectorWaterMod
