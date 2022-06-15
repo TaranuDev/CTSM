@@ -134,6 +134,12 @@ attributes from the config_cache.xml file (with keys converted to upper-case).
 
 <irrigate >.false.</irrigate>
 
+<!-- Sector Water Usage default -->
+<sectorwater phys="clm5_1" sim_year_range="1850-2100">.false.</sectorwater>
+<sectorwater phys="clm5_0" sim_year_range="1850-2100">.false.</sectorwater>
+<sectorwater phys="clm4_5" sim_year_range="1850-2100">.false.</sectorwater>
+
+<sectorwater >.false.</sectorwater>
 
 <!-- Saturation excess runoff for crops  -->
 <crop_fsat_equals_zero>.false.</crop_fsat_equals_zero>
@@ -368,6 +374,13 @@ attributes from the config_cache.xml file (with keys converted to upper-case).
 <irrig_threshold_fraction phys="clm4_5" >0.5</irrig_threshold_fraction>
 <irrig_river_volume_threshold>0.1</irrig_river_volume_threshold>
 
+<!-- Sector water usage namelist defaults -->
+<dom_and_liv_start_time>0</dom_and_liv_start_time>
+<ind_start_time>0</ind_start_time>
+<dom_and_liv_length>86400</dom_and_liv_length>
+<ind_length>86400</ind_length>
+<sectorwater_river_volume_threshold>0.1</sectorwater_river_volume_threshold>
+
 <!--  River storage derived lake evaporation and irrigation limitation  -->
 <limit_irrigation_if_rof_enabled phys="clm5_1" >.false.</limit_irrigation_if_rof_enabled>
 <limit_irrigation_if_rof_enabled phys="clm5_0" >.false.</limit_irrigation_if_rof_enabled>
@@ -376,6 +389,14 @@ attributes from the config_cache.xml file (with keys converted to upper-case).
 <use_groundwater_irrigation>.false.</use_groundwater_irrigation>
 
 <irrig_method_default>drip</irrig_method_default>
+
+<!--  River storage derived lake evaporation and sector water usage limitation  -->
+<limit_sectorwater_if_rof_enabled phys="clm5_1" >.false.</limit_sectorwater_if_rof_enabled>
+<limit_sectorwater_if_rof_enabled phys="clm5_0" >.false.</limit_sectorwater_if_rof_enabled>
+<limit_sectorwater_if_rof_enabled               >.false.</limit_sectorwater_if_rof_enabled>
+
+<use_groundwater_sectorwater>.false.</use_groundwater_sectorwater>
+
 
 <!-- Snow veg treatment -->
 <snowveg_affects_radiation>.true.</snowveg_affects_radiation>
@@ -1035,6 +1056,8 @@ lnd/clm2/surfdata_map/release-clm5.0.18/surfdata_48x96_hist_16pfts_Irrig_CMIP6_s
 lnd/clm2/surfdata_map/release-clm5.0.18/surfdata_0.9x1.25_hist_16pfts_Irrig_CMIP6_simyr2000_c190214.nc</fsurdat>
 <fsurdat hgrid="0.9x1.25"  sim_year="2000" use_crop=".false." irrigate=".true.">
 lnd/clm2/surfdata_map/release-clm5.0.18/surfdata_0.9x1.25_hist_16pfts_Irrig_CMIP6_simyr2000_c190214.nc</fsurdat>
+<fsurdat hgrid="0.9x1.25"  sim_year="2000" use_crop=".false." irrigate=".true." sectorwater=".true.">
+../../../../u/home/staranu/input_data/surfdata/surfdata_0.9x1.25_hist_78pfts_CMIP6_simyr2000_c220427.nc</fsurdat>
 <fsurdat hgrid="1.9x2.5"   sim_year="2000" use_crop=".false." irrigate=".true." use_vichydro=".true.">
 lnd/clm2/surfdata_map/release-clm5.0.18/surfdata_1.9x2.5_hist_16pfts_Irrig_CMIP6_simyr2000_c190304.nc</fsurdat>
 <fsurdat hgrid="1.9x2.5"   sim_year="2000" use_crop=".false." irrigate=".true." >
