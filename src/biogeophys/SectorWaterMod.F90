@@ -494,27 +494,27 @@ module SectorWaterMod
     this%dom_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='DOM_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='domestic actual withdrawal flux', &
-         ptr_patch=this%dom_withd_actual_grc, default='inactive')
+         ptr_gcell=this%dom_withd_actual_grc, default='inactive')
  
     this%liv_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='LIV_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='livestock actual withdrawal flux', &
-         ptr_patch=this%liv_withd_actual_grc, default='inactive')
+         ptr_gcell=this%liv_withd_actual_grc, default='inactive')
     
     this%elec_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='ELEC_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='thermoelectric actual withdrawal flux', &
-         ptr_patch=this%elec_withd_actual_grc, default='inactive')      
+         ptr_gcell=this%elec_withd_actual_grc, default='inactive')      
  
     this%mfc_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='MFC_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='manufacturing actual withdrawal flux', &
-         ptr_patch=this%mfc_withd_actual_grc, default='inactive')
+         ptr_gcell=this%mfc_withd_actual_grc, default='inactive')
  
     this%min_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='MIN_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='mining actual withdrawal flux', &
-         ptr_patch=this%min_withd_actual_grc, default='inactive')
+         ptr_gcell=this%min_withd_actual_grc, default='inactive')
  
   end subroutine SectorWaterInitHistory
  
