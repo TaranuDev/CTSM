@@ -490,31 +490,61 @@ module SectorWaterMod
     !-----------------------------------------------------------------------
  
     begg = bounds%begg; endg= bounds%endg
+
+    this%input_mon_dom_withd_grc(begg:endg) = spval
+    call hist_addfld1d (fname='INPUT_MON_DOM_DEMAND', units='mm/s', &
+         avgflag='A', long_name='input monthly domestic demand', &
+         ptr_gcell=this%input_mon_dom_withd_grc, default='inactive')
  
     this%dom_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='DOM_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='domestic actual withdrawal flux', &
          ptr_gcell=this%dom_withd_actual_grc, default='inactive')
+
+    this%dom_withd_grc(begg:endg) = spval
+    call hist_addfld1d (fname='DOM_EXPECTED_WITHD', units='mm/s', &
+         avgflag='A', long_name='domestic expected withdrawal flux', &
+         ptr_gcell=this%dom_withd_grc, default='inactive')
  
     this%liv_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='LIV_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='livestock actual withdrawal flux', &
          ptr_gcell=this%liv_withd_actual_grc, default='inactive')
+
+    this%liv_withd_grc(begg:endg) = spval
+    call hist_addfld1d (fname='LIV_EXPECTED_WITHD', units='mm/s', &
+         avgflag='A', long_name='livestock expected withdrawal flux', &
+         ptr_gcell=this%liv_withd_grc, default='inactive')
     
     this%elec_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='ELEC_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='thermoelectric actual withdrawal flux', &
-         ptr_gcell=this%elec_withd_actual_grc, default='inactive')      
+         ptr_gcell=this%elec_withd_actual_grc, default='inactive')
+
+    this%elec_withd_grc(begg:endg) = spval
+    call hist_addfld1d (fname='ELEC_EXPECTED_WITHD', units='mm/s', &
+         avgflag='A', long_name='thermoelectric expected withdrawal flux', &
+         ptr_gcell=this%elec_withd_grc, default='inactive')       
  
     this%mfc_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='MFC_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='manufacturing actual withdrawal flux', &
          ptr_gcell=this%mfc_withd_actual_grc, default='inactive')
+
+    this%mfc_withd_grc(begg:endg) = spval
+    call hist_addfld1d (fname='MFC_EXPECTED_WITHD', units='mm/s', &
+         avgflag='A', long_name='manufacturing expected withdrawal flux', &
+         ptr_gcell=this%mfc_withd_grc, default='inactive')
  
     this%min_withd_actual_grc(begg:endg) = spval
     call hist_addfld1d (fname='MIN_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='mining actual withdrawal flux', &
          ptr_gcell=this%min_withd_actual_grc, default='inactive')
+
+    this%min_withd_grc(begg:endg) = spval
+    call hist_addfld1d (fname='MIN_EXPECTED_WITHD', units='mm/s', &
+         avgflag='A', long_name='mining expected withdrawal flux', &
+         ptr_gcell=this%min_withd_grc, default='inactive')
  
   end subroutine SectorWaterInitHistory
  
@@ -861,12 +891,12 @@ module SectorWaterMod
  ! Get current date
  call get_curr_date(year, mon, day, sec)
  dayspyr = get_curr_days_per_year()
- dayspm  = dayspyr/12_r8
+ dayspm  = dayspyr/12._r8
  !secs_per_day = 24_r8*3600_r8
  !dom_and_liv_flux_factor = ((1_r8/dayspm)/secs_per_day)
  !ind_flux_factor = ((1_r8/dayspm)/secs_per_day)
- dom_and_liv_flux_factor = ((1_r8/dayspm)/this%params%dom_and_liv_length)
- ind_flux_factor = ((1_r8/dayspm)/this%params%ind_length)
+ dom_and_liv_flux_factor = ((1._r8/dayspm)/this%params%dom_and_liv_length)
+ ind_flux_factor = ((1._r8/dayspm)/this%params%ind_length)
  
  ! Read input for new month if end of month
  if (is_end_curr_month()) then
