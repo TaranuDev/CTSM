@@ -848,6 +848,7 @@ module SectorWaterMod
  integer :: mon     ! month (1, ..., 12) for nstep+1
  integer :: day     ! day of month (1, ..., 31) for nstep+1
  integer :: sec     ! seconds into current date for nstep+1
+ integer :: first_read ! variable to do first read, in future I need to make subroutine is_beg_curr_month
  real(r8) :: dayspyr ! days per year
  real(r8) :: dayspm   ! days per month
  real(r8) :: secs_per_day   ! seconds per day
@@ -897,12 +898,19 @@ module SectorWaterMod
  call get_curr_date(year, mon, day, sec)
  dayspyr = get_curr_days_per_year()
  dayspm  = dayspyr/12._r8
+ first_read = 1
  !secs_per_day = 24_r8*3600_r8
  !dom_and_liv_flux_factor = ((1_r8/dayspm)/secs_per_day)
  !ind_flux_factor = ((1_r8/dayspm)/secs_per_day)
  dom_and_liv_flux_factor = ((1._r8/dayspm)/this%params%dom_and_liv_length)
  ind_flux_factor = ((1._r8/dayspm)/this%params%ind_length)
  
+ ! In future need to create is_beg_curr_month so we can have only one if statement
+ if (first_read = 1) then 
+   call this%ReadSectorWaterData(bounds, mon)
+   first_read = 2
+ endif
+
  ! Read input for new month if end of month
  if (is_end_curr_month()) then
     call this%ReadSectorWaterData(bounds, mon)
