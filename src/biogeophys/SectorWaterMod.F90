@@ -906,7 +906,7 @@ module SectorWaterMod
  ind_flux_factor = ((1._r8/dayspm)/this%params%ind_length)
  
  ! In future need to create is_beg_curr_month so we can have only one if statement
- if (first_read = 1) then 
+ if (first_read == 1) then 
    call this%ReadSectorWaterData(bounds, mon)
    first_read = 2
  endif
