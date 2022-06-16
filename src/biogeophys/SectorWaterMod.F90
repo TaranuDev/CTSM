@@ -707,7 +707,7 @@ module SectorWaterMod
     use fileutils       , only : getfil
     use clm_varctl      , only : fsurdat
     use domainMod       , only : ldomain
-    use clm_varcon      , only : grlnd
+    use clm_varcon      , only : nameg
     use ncdio_pio        , only : file_desc_t
     use spmdMod        , only : masterproc, mpicom, MPI_REAL8, MPI_INTEGER
     use netcdf
@@ -762,43 +762,43 @@ module SectorWaterMod
     call ncd_pio_openfile (ncid, trim(locfn), 0)
  
     call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=mon_dom_withd, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: withd_dom NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
 
     call ncd_io(ncid=ncid, varname='cons_dom', flag='read', data=mon_dom_cons, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: cons_dom NOT on surfdata file'//errMsg(sourcefile, __LINE__))           
  
     call ncd_io(ncid=ncid, varname='withd_liv', flag='read', data=mon_liv_withd, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: withd_liv NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
 
     call ncd_io(ncid=ncid, varname='cons_liv', flag='read', data=mon_liv_cons, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: cons_liv NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
  
     call ncd_io(ncid=ncid, varname='withd_elec', flag='read', data=mon_elec_withd, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: withd_elec NOT on surfdata file'//errMsg(sourcefile, __LINE__))           
 
     call ncd_io(ncid=ncid, varname='cons_elec', flag='read', data=mon_elec_cons, &
-            dim1name=grlnd, nt=mon, readvar=readvar)     
+            dim1name=nameg, nt=mon, readvar=readvar)     
     if (.not. readvar) call endrun(msg=' ERROR: cons_elec NOT on surfdata file'//errMsg(sourcefile, __LINE__))  
 
     call ncd_io(ncid=ncid, varname='withd_mfc', flag='read', data=mon_mfc_withd, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: withd_mfc NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
 
     call ncd_io(ncid=ncid, varname='cons_mfc', flag='read', data=mon_mfc_cons, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: cons_mfc NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
 
     call ncd_io(ncid=ncid, varname='withd_min', flag='read', data=mon_min_withd, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: withd_min NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
 
     call ncd_io(ncid=ncid, varname='cons_min', flag='read', data=mon_min_cons, &
-            dim1name=grlnd, nt=mon, readvar=readvar)
+            dim1name=nameg, nt=mon, readvar=readvar)
     if (.not. readvar) call endrun(msg=' ERROR: cons_min NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
 
     call ncd_pio_closefile(ncid)
