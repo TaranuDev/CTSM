@@ -921,20 +921,20 @@ module SectorWaterMod
  min_consumption(bounds%begg:bounds%endg) = 0._r8
  
  do g = bounds%begg,bounds%endg
-    dom_demand(g) = this%input_mon_dom_withd_grc(g)
-    dom_consumption(g) = this%input_mon_dom_cons_grc(g)
+    dom_demand(g) = this%input_mon_dom_withd_grc(g)*dom_and_liv_flux_factor
+    dom_consumption(g) = this%input_mon_dom_cons_grc(g)*dom_and_liv_flux_factor
  
-    liv_demand(g) = this%input_mon_liv_withd_grc(g)
-    liv_consumption(g) = this%input_mon_liv_cons_grc(g)
+    liv_demand(g) = this%input_mon_liv_withd_grc(g)*dom_and_liv_flux_factor
+    liv_consumption(g) = this%input_mon_liv_cons_grc(g)*dom_and_liv_flux_factor
     
-    elec_demand(g) = this%input_mon_elec_withd_grc(g)
-    elec_consumption(g) = this%input_mon_elec_cons_grc(g)
+    elec_demand(g) = this%input_mon_elec_withd_grc(g)*ind_flux_factor
+    elec_consumption(g) = this%input_mon_elec_cons_grc(g)*ind_flux_factor
  
-    mfc_demand(g) = this%input_mon_mfc_withd_grc(g)
-    mfc_consumption(g) = this%input_mon_mfc_cons_grc(g)
+    mfc_demand(g) = this%input_mon_mfc_withd_grc(g)*ind_flux_factor
+    mfc_consumption(g) = this%input_mon_mfc_cons_grc(g)*ind_flux_factor
  
-    min_demand(g) = this%input_mon_min_withd_grc(g)
-    min_consumption(g) = this%input_mon_min_cons_grc(g)
+    min_demand(g) = this%input_mon_min_withd_grc(g)*ind_flux_factor
+    min_consumption(g) = this%input_mon_min_cons_grc(g)*ind_flux_factor
  
  end do ! end loop over gridcels
  
@@ -990,47 +990,47 @@ module SectorWaterMod
  ! Convert demand to withdrawal rates [mm/s]
  do g = bounds%begg,bounds%endg
     ! Domestic
-    this%dom_withd_grc(g) = dom_demand(g)*dom_and_liv_flux_factor
-    this%dom_withd_actual_grc(g) = dom_demand_volr_limited(g)*dom_and_liv_flux_factor
+    this%dom_withd_grc(g) = dom_demand(g)
+    this%dom_withd_actual_grc(g) = dom_demand_volr_limited(g)
  
-    this%dom_cons_grc(g) = dom_consumption(g)*dom_and_liv_flux_factor
-    this%dom_cons_actual_grc(g) = dom_consumption_volr_limited(g)*dom_and_liv_flux_factor
+    this%dom_cons_grc(g) = dom_consumption(g)
+    this%dom_cons_actual_grc(g) = dom_consumption_volr_limited(g)
     
     this%dom_rf_actual_grc(g) = this%dom_withd_actual_grc(g) - this%dom_cons_actual_grc(g)
  
     ! Livestock
-    this%liv_withd_grc(g) = liv_demand(g)*dom_and_liv_flux_factor
-    this%liv_withd_actual_grc(g) = liv_demand_volr_limited(g)*dom_and_liv_flux_factor
+    this%liv_withd_grc(g) = liv_demand(g)
+    this%liv_withd_actual_grc(g) = liv_demand_volr_limited(g)
  
-    this%liv_cons_grc(g) = liv_consumption(g)*dom_and_liv_flux_factor
-    this%liv_cons_actual_grc(g) = liv_consumption_volr_limited(g)*dom_and_liv_flux_factor
+    this%liv_cons_grc(g) = liv_consumption(g)
+    this%liv_cons_actual_grc(g) = liv_consumption_volr_limited(g)
     
     this%liv_rf_actual_grc(g) = this%liv_withd_actual_grc(g) - this%liv_cons_actual_grc(g)
  
     ! Thermoelectric
-    this%elec_withd_grc(g) = elec_demand(g)*ind_flux_factor
-    this%elec_withd_actual_grc(g) = elec_demand_volr_limited(g)*ind_flux_factor
+    this%elec_withd_grc(g) = elec_demand(g)
+    this%elec_withd_actual_grc(g) = elec_demand_volr_limited(g)
  
-    this%elec_cons_grc(g) = elec_consumption(g)*ind_flux_factor
-    this%elec_cons_actual_grc(g) = elec_consumption_volr_limited(g)*ind_flux_factor
+    this%elec_cons_grc(g) = elec_consumption(g)
+    this%elec_cons_actual_grc(g) = elec_consumption_volr_limited(g)
     
     this%elec_rf_actual_grc(g) = this%elec_withd_actual_grc(g) - this%elec_cons_actual_grc(g)
  
     ! Manufacturing
-    this%mfc_withd_grc(g) = mfc_demand(g)*ind_flux_factor
-    this%mfc_withd_actual_grc(g) = mfc_demand_volr_limited(g)*ind_flux_factor
+    this%mfc_withd_grc(g) = mfc_demand(g)
+    this%mfc_withd_actual_grc(g) = mfc_demand_volr_limited(g)
  
-    this%mfc_cons_grc(g) = mfc_consumption(g)*ind_flux_factor
-    this%mfc_cons_actual_grc(g) = mfc_consumption_volr_limited(g)*ind_flux_factor
+    this%mfc_cons_grc(g) = mfc_consumption(g)
+    this%mfc_cons_actual_grc(g) = mfc_consumption_volr_limited(g)
     
     this%mfc_rf_actual_grc(g) = this%mfc_withd_actual_grc(g) - this%mfc_cons_actual_grc(g)
  
     ! Mining
-    this%min_withd_grc(g) = min_demand(g)*ind_flux_factor
-    this%min_withd_actual_grc(g) = min_demand_volr_limited(g)*ind_flux_factor
+    this%min_withd_grc(g) = min_demand(g)
+    this%min_withd_actual_grc(g) = min_demand_volr_limited(g)
  
-    this%min_cons_grc(g) = min_consumption(g)*ind_flux_factor
-    this%min_cons_actual_grc(g) = min_consumption_volr_limited(g)*ind_flux_factor
+    this%min_cons_grc(g) = min_consumption(g)
+    this%min_cons_actual_grc(g) = min_consumption_volr_limited(g)
     
     this%min_rf_actual_grc(g) = this%min_withd_actual_grc(g) - this%min_cons_actual_grc(g)
  end do
@@ -1099,29 +1099,7 @@ module SectorWaterMod
  character(len=*), parameter :: subname = 'CalcSectorDemandVolrLimited'
  !-----------------------------------------------------------------------
  
- ! ! SHR_ASSERT_ALL_FL((ubound(dom_demand) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(dom_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(liv_demand) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(liv_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(elec_demand) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(elec_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(mfc_demand) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(mfc_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(min_demand) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(min_consumption) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(volr) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(dom_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(dom_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(liv_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(liv_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(elec_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(elec_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(mfc_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(mfc_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(min_demand_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- ! SHR_ASSERT_ALL_FL((ubound(min_consumption_volr_limited) == (/bounds%endg/)), sourcefile, __LINE__)
- 
- 
+
  do g = bounds%begg, bounds%endg
     if (volr(g) > 0._r8) then
        available_volr = volr(g) * (1._r8 - this%params%sectorwater_river_volume_threshold)
@@ -1132,7 +1110,7 @@ module SectorWaterMod
     end if
  
     if (dom_demand(g) > max_demand_supported_by_volr) then
-       ! inadequate river storage, adjust irrigation demand
+       ! inadequate river storage, adjust demand
        dom_demand_limited_ratio_grc(g)  = max_demand_supported_by_volr / dom_demand(g)
        liv_demand_limited_ratio_grc(g)  = 0._r8
        elec_demand_limited_ratio_grc(g) = 0._r8
