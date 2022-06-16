@@ -709,7 +709,8 @@ module SectorWaterMod
     use domainMod       , only : ldomain
     use clm_varcon      , only : grlnd
     use ncdio_pio        , only : file_desc_t
-    use spmdMod        , only : masterproc, mpicom
+    use spmdMod        , only : masterproc, mpicom, MPI_REAL8, MPI_INTEGER
+    use netcdf
  
     ! !ARGUMENTS:
     class(sectorwater_type), intent(inout) :: this
@@ -722,12 +723,7 @@ module SectorWaterMod
     
     integer :: ier                        ! error code
     integer :: g    ! gridcell index
-    integer :: ni,nj,ns                   ! indices
-    integer :: dimid,varid                ! input netCDF id's
-    integer :: ntim                       ! number of input data time samples
-    integer :: nlon_i                     ! number of input data longitudes
-    integer :: nlat_i                     ! number of input data latitudes
-    logical :: isgrid2d                   ! true => file is 2d
+    logical :: readvar
     real(r8), pointer :: mon_dom_withd(:) ! monthly domestic withdrawal read from input files
     real(r8), pointer :: mon_dom_cons(:)  ! monthly domestic consumption read from input files
     real(r8), pointer :: mon_liv_withd(:) ! monthly livestock withdrawal read from input files
@@ -744,7 +740,7 @@ module SectorWaterMod
     !-----------------------------------------------------------------------
  
     if (masterproc) then
-       write (iulog,*) 'Attempting to read annual sectoral water usage data .....'
+       write (iulog,*) 'Attempting to read sectoral water usage data for current month .....'
     end if
  
  
@@ -764,41 +760,47 @@ module SectorWaterMod
     ! Determine necessary indices
     call getfil(fsurdat, locfn, 0)
     call ncd_pio_openfile (ncid, trim(locfn), 0)
-    call ncd_inqfdims (ncid, isgrid2d, ni, nj, ns)
- 
-    if (ldomain%ns /= ns .or. ldomain%ni /= ni .or. ldomain%nj /= nj) then
-       write(iulog,*)trim(subname), 'ldomain and input file do not match dims '
-       write(iulog,*)trim(subname), 'ldomain%ni,ni,= ',ldomain%ni,ni
-       write(iulog,*)trim(subname), 'ldomain%nj,nj,= ',ldomain%nj,nj
-       write(iulog,*)trim(subname), 'ldomain%ns,ns,= ',ldomain%ns,ns
-       call endrun(msg=errMsg(sourcefile, __LINE__))
-    end if
  
     call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=mon_dom_withd, &
-            dim1name=grlnd, nt=mon)        
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: withd_dom NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
+
     call ncd_io(ncid=ncid, varname='cons_dom', flag='read', data=mon_dom_cons, &
-            dim1name=grlnd, nt=mon)
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: cons_dom NOT on surfdata file'//errMsg(sourcefile, __LINE__))           
  
     call ncd_io(ncid=ncid, varname='withd_liv', flag='read', data=mon_liv_withd, &
-            dim1name=grlnd, nt=mon)
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: withd_liv NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
+
     call ncd_io(ncid=ncid, varname='cons_liv', flag='read', data=mon_liv_cons, &
-            dim1name=grlnd, nt=mon)
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: cons_liv NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
  
     call ncd_io(ncid=ncid, varname='withd_elec', flag='read', data=mon_elec_withd, &
-            dim1name=grlnd, nt=mon)
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: withd_elec NOT on surfdata file'//errMsg(sourcefile, __LINE__))           
+
     call ncd_io(ncid=ncid, varname='cons_elec', flag='read', data=mon_elec_cons, &
-            dim1name=grlnd, nt=mon)     
-            
+            dim1name=grlnd, nt=mon, readvar=readvar)     
+    if (.not. readvar) call endrun(msg=' ERROR: cons_elec NOT on surfdata file'//errMsg(sourcefile, __LINE__))  
+
     call ncd_io(ncid=ncid, varname='withd_mfc', flag='read', data=mon_mfc_withd, &
-            dim1name=grlnd, nt=mon)
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: withd_mfc NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
+
     call ncd_io(ncid=ncid, varname='cons_mfc', flag='read', data=mon_mfc_cons, &
-            dim1name=grlnd, nt=mon)
- 
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: cons_mfc NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
+
     call ncd_io(ncid=ncid, varname='withd_min', flag='read', data=mon_min_withd, &
-            dim1name=grlnd, nt=mon)
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: withd_min NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
+
     call ncd_io(ncid=ncid, varname='cons_min', flag='read', data=mon_min_cons, &
-            dim1name=grlnd, nt=mon)
- 
+            dim1name=grlnd, nt=mon, readvar=readvar)
+    if (.not. readvar) call endrun(msg=' ERROR: cons_min NOT on surfdata file'//errMsg(sourcefile, __LINE__))   
+
     call ncd_pio_closefile(ncid)
  
     do g = bounds%begg,bounds%endg
@@ -818,6 +820,9 @@ module SectorWaterMod
        this%input_mon_min_cons_grc(g)  = mon_min_cons(g)
        
     end do
+
+    deallocate(mon_dom_withd, mon_dom_cons, mon_liv_withd, mon_liv_cons, mon_elec_withd, mon_elec_cons, mon_mfc_withd, mon_mfc_cons, mon_min_withd, mon_min_cons)
+
  endsubroutine ReadSectorWaterData
  
  subroutine CalcSectorWaterNeeded(this, bounds, volr, rof_prognostic)
