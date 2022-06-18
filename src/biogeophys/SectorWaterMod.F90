@@ -1242,7 +1242,7 @@ module SectorWaterMod
  do g = bounds%begg, bounds%endg
     if (volr(g) > 0._r8) then
        available_volr = volr(g) * (1._r8 - this%params%sectorwater_river_volume_threshold)
-       max_demand_supported_by_volr = available_volr / grc%area(g) * m3_over_km2_to_mm
+       max_demand_supported_by_volr = (available_volr / grc%area(g) * m3_over_km2_to_mm)/(1.0/86400.0)
     else
        ! Ensure that negative volr is treated the same as 0 volr
        max_demand_supported_by_volr = 0._r8
