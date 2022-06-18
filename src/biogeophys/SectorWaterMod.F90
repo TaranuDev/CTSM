@@ -1242,45 +1242,45 @@ module SectorWaterMod
  do g = bounds%begg, bounds%endg
     if (volr(g) > 0._r8) then
        available_volr = volr(g) * (1._r8 - this%params%sectorwater_river_volume_threshold)
-       max_demand_supported_by_volr = available_volr / grc%area(g) * m3_over_km2_to_mm
+       max_demand_supported_by_volr = (available_volr / grc%area(g) * m3_over_km2_to_mm)
     else
        ! Ensure that negative volr is treated the same as 0 volr
        max_demand_supported_by_volr = 0._r8
     end if
  
-    if (dom_demand(g) > max_demand_supported_by_volr) then
+    if (dom_demand(g) * this%dtime > max_demand_supported_by_volr) then
        ! inadequate river storage, adjust demand
-       dom_demand_limited_ratio_grc(g)  = max_demand_supported_by_volr / dom_demand(g)
+       dom_demand_limited_ratio_grc(g)  = max_demand_supported_by_volr / (dom_demand(g) * this%dtime)
        liv_demand_limited_ratio_grc(g)  = 0._r8
        elec_demand_limited_ratio_grc(g) = 0._r8
        mfc_demand_limited_ratio_grc(g)  = 0._r8
        min_demand_limited_ratio_grc(g)  = 0._r8
  
-    else if (liv_demand(g) > (max_demand_supported_by_volr - dom_demand(g))) then
+    else if (liv_demand(g) * this%dtime > (max_demand_supported_by_volr - (dom_demand(g) * this%dtime))) then
        dom_demand_limited_ratio_grc(g)  = 1._r8
-       liv_demand_limited_ratio_grc(g)  = max_demand_supported_by_volr / liv_demand(g)
+       liv_demand_limited_ratio_grc(g)  = (max_demand_supported_by_volr - (dom_demand(g) * this%dtime)) / (liv_demand(g) * this%dtime)
        elec_demand_limited_ratio_grc(g) = 0._r8
        mfc_demand_limited_ratio_grc(g)  = 0._r8
        min_demand_limited_ratio_grc(g)  = 0._r8
-    else if (elec_demand(g) > (max_demand_supported_by_volr - dom_demand(g) - liv_demand(g))) then
+    else if (elec_demand(g) * this%dtime > (max_demand_supported_by_volr - (dom_demand(g) - liv_demand(g))* this%dtime )) then
        dom_demand_limited_ratio_grc(g)  = 1._r8
        liv_demand_limited_ratio_grc(g)  = 1._r8
-       elec_demand_limited_ratio_grc(g) = max_demand_supported_by_volr / elec_demand(g)
+       elec_demand_limited_ratio_grc(g) = (max_demand_supported_by_volr - (dom_demand(g) - liv_demand(g))* this%dtime)  / (elec_demand(g) * this%dtime)
        mfc_demand_limited_ratio_grc(g)  = 0._r8
        min_demand_limited_ratio_grc(g)  = 0._r8
-    else if (mfc_demand(g) > (max_demand_supported_by_volr - dom_demand(g) - liv_demand(g) - elec_demand(g))) then
+    else if (mfc_demand(g) * this%dtime > (max_demand_supported_by_volr - (dom_demand(g) - liv_demand(g) - elec_demand(g)) * this%dtime)) then
        dom_demand_limited_ratio_grc(g)  = 1._r8
        liv_demand_limited_ratio_grc(g)  = 1._r8
        elec_demand_limited_ratio_grc(g) = 1._r8
-       mfc_demand_limited_ratio_grc(g)  = max_demand_supported_by_volr / mfc_demand(g)
+       mfc_demand_limited_ratio_grc(g)  = (max_demand_supported_by_volr - (dom_demand(g) - liv_demand(g) - elec_demand(g)) * this%dtime) / (mfc_demand(g) * this%dtime)
        min_demand_limited_ratio_grc(g)  = 0._r8
  
-    else if (min_demand(g) > (max_demand_supported_by_volr - dom_demand(g) - liv_demand(g) - elec_demand(g) - mfc_demand(g))) then
+    else if (min_demand(g) * this%dtime > (max_demand_supported_by_volr - (dom_demand(g) - liv_demand(g) - elec_demand(g) - mfc_demand(g)) * this%dtime)) then
        dom_demand_limited_ratio_grc(g)  = 1._r8
        liv_demand_limited_ratio_grc(g)  = 1._r8
        elec_demand_limited_ratio_grc(g) = 1._r8
        mfc_demand_limited_ratio_grc(g)  = 1._r8
-       min_demand_limited_ratio_grc(g)  = max_demand_supported_by_volr / min_demand(g)
+       min_demand_limited_ratio_grc(g)  = (max_demand_supported_by_volr - (dom_demand(g) - liv_demand(g) - elec_demand(g) - mfc_demand(g)) * this%dtime)  / (min_demand(g) * this%dtime)
  
     else
        dom_demand_limited_ratio_grc(g)  = 1._r8
