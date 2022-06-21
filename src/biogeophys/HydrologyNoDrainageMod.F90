@@ -85,7 +85,9 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwa
    endif
    
    do g = bounds%begg, bounds%endg
-      water_inst%waterlnd2atmbulk_inst%qdom_withd_grc(g) = sectorwater_inst%dom_withd_actual_grc(g)
+     ! water_inst%waterlnd2atmbulk_inst%qdom_withd_grc(g) = sectorwater_inst%dom_withd_actual_grc(g)
+      water_inst%waterlnd2atmbulk_inst%qdom_withd_grc(g) = 0.000001
+
       water_inst%waterlnd2atmbulk_inst%qdom_rf_grc(g) = sectorwater_inst%dom_rf_actual_grc(g)
    
       water_inst%waterlnd2atmbulk_inst%qliv_withd_grc(g) = sectorwater_inst%liv_withd_actual_grc(g)
