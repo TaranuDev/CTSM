@@ -424,45 +424,45 @@ module SectorWaterMod
  
     begg = bounds%begg; endg= bounds%endg   
  
-    allocate(this%input_mon_dom_withd_grc (begg:endg))            ; this%input_mon_dom_withd_grc      (:)   = nan
-    allocate(this%input_mon_dom_cons_grc (begg:endg))             ; this%input_mon_dom_cons_grc       (:)   = nan
-    allocate(this%dom_withd_grc (begg:endg))                      ; this%dom_withd_grc          (:)   = nan
-    allocate(this%dom_cons_grc (begg:endg))                       ; this%dom_cons_grc           (:)   = nan
-    allocate(this%dom_withd_actual_grc (begg:endg))               ; this%dom_withd_actual_grc   (:)   = nan
-    allocate(this%dom_cons_actual_grc (begg:endg))                ; this%dom_cons_actual_grc    (:)   = nan
-    allocate(this%dom_rf_actual_grc (begg:endg))                  ; this%dom_rf_actual_grc      (:)   = nan
+    allocate(this%input_mon_dom_withd_grc (begg:endg))            ; this%input_mon_dom_withd_grc      (:)   = 0
+    allocate(this%input_mon_dom_cons_grc (begg:endg))             ; this%input_mon_dom_cons_grc       (:)   = 0
+    allocate(this%dom_withd_grc (begg:endg))                      ; this%dom_withd_grc          (:)   = 0
+    allocate(this%dom_cons_grc (begg:endg))                       ; this%dom_cons_grc           (:)   = 0
+    allocate(this%dom_withd_actual_grc (begg:endg))               ; this%dom_withd_actual_grc   (:)   = 0
+    allocate(this%dom_cons_actual_grc (begg:endg))                ; this%dom_cons_actual_grc    (:)   = 0
+    allocate(this%dom_rf_actual_grc (begg:endg))                  ; this%dom_rf_actual_grc      (:)   = 0
  
-    allocate(this%input_mon_liv_withd_grc (begg:endg))            ; this%input_mon_liv_withd_grc      (:)   = nan
-    allocate(this%input_mon_liv_cons_grc (begg:endg))             ; this%input_mon_liv_cons_grc       (:)   = nan
-    allocate(this%liv_withd_grc (begg:endg))                      ; this%liv_withd_grc          (:)   = nan
-    allocate(this%liv_cons_grc (begg:endg))                       ; this%liv_cons_grc           (:)   = nan
-    allocate(this%liv_withd_actual_grc (begg:endg))               ; this%liv_withd_actual_grc   (:)   = nan
-    allocate(this%liv_cons_actual_grc (begg:endg))                ; this%liv_cons_actual_grc    (:)   = nan
-    allocate(this%liv_rf_actual_grc (begg:endg))                  ; this%liv_rf_actual_grc      (:)   = nan
+    allocate(this%input_mon_liv_withd_grc (begg:endg))            ; this%input_mon_liv_withd_grc      (:)   = 0
+    allocate(this%input_mon_liv_cons_grc (begg:endg))             ; this%input_mon_liv_cons_grc       (:)   = 0
+    allocate(this%liv_withd_grc (begg:endg))                      ; this%liv_withd_grc          (:)   = 0
+    allocate(this%liv_cons_grc (begg:endg))                       ; this%liv_cons_grc           (:)   = 0
+    allocate(this%liv_withd_actual_grc (begg:endg))               ; this%liv_withd_actual_grc   (:)   = 0
+    allocate(this%liv_cons_actual_grc (begg:endg))                ; this%liv_cons_actual_grc    (:)   = 0
+    allocate(this%liv_rf_actual_grc (begg:endg))                  ; this%liv_rf_actual_grc      (:)   = 0
  
-    allocate(this%input_mon_elec_withd_grc (begg:endg))           ; this%input_mon_elec_withd_grc      (:)   = nan
-    allocate(this%input_mon_elec_cons_grc (begg:endg))            ; this%input_mon_elec_cons_grc       (:)   = nan
-    allocate(this%elec_withd_grc (begg:endg))                     ; this%elec_withd_grc         (:)   = nan
-    allocate(this%elec_cons_grc (begg:endg))                      ; this%elec_cons_grc          (:)   = nan
-    allocate(this%elec_withd_actual_grc (begg:endg))              ; this%elec_withd_actual_grc  (:)   = nan
-    allocate(this%elec_cons_actual_grc (begg:endg))               ; this%elec_cons_actual_grc   (:)   = nan
-    allocate(this%elec_rf_actual_grc (begg:endg))                 ; this%elec_rf_actual_grc     (:)   = nan
+    allocate(this%input_mon_elec_withd_grc (begg:endg))           ; this%input_mon_elec_withd_grc      (:)   = 0
+    allocate(this%input_mon_elec_cons_grc (begg:endg))            ; this%input_mon_elec_cons_grc       (:)   = 0
+    allocate(this%elec_withd_grc (begg:endg))                     ; this%elec_withd_grc         (:)   = 0
+    allocate(this%elec_cons_grc (begg:endg))                      ; this%elec_cons_grc          (:)   = 0
+    allocate(this%elec_withd_actual_grc (begg:endg))              ; this%elec_withd_actual_grc  (:)   = 0
+    allocate(this%elec_cons_actual_grc (begg:endg))               ; this%elec_cons_actual_grc   (:)   = 0
+    allocate(this%elec_rf_actual_grc (begg:endg))                 ; this%elec_rf_actual_grc     (:)   = 0
  
-    allocate(this%input_mon_mfc_withd_grc (begg:endg))            ; this%input_mon_mfc_withd_grc      (:)   = nan
-    allocate(this%input_mon_mfc_cons_grc (begg:endg))             ; this%input_mon_mfc_cons_grc       (:)   = nan
-    allocate(this%mfc_withd_grc (begg:endg))                      ; this%mfc_withd_grc          (:)   = nan
-    allocate(this%mfc_cons_grc (begg:endg))                       ; this%mfc_cons_grc           (:)   = nan
-    allocate(this%mfc_withd_actual_grc (begg:endg))               ; this%mfc_withd_actual_grc   (:)   = nan
-    allocate(this%mfc_cons_actual_grc (begg:endg))                ; this%mfc_cons_actual_grc    (:)   = nan
-    allocate(this%mfc_rf_actual_grc (begg:endg))                  ; this%mfc_rf_actual_grc      (:)   = nan
+    allocate(this%input_mon_mfc_withd_grc (begg:endg))            ; this%input_mon_mfc_withd_grc      (:)   = 0
+    allocate(this%input_mon_mfc_cons_grc (begg:endg))             ; this%input_mon_mfc_cons_grc       (:)   = 0
+    allocate(this%mfc_withd_grc (begg:endg))                      ; this%mfc_withd_grc          (:)   = 0
+    allocate(this%mfc_cons_grc (begg:endg))                       ; this%mfc_cons_grc           (:)   = 0
+    allocate(this%mfc_withd_actual_grc (begg:endg))               ; this%mfc_withd_actual_grc   (:)   = 0
+    allocate(this%mfc_cons_actual_grc (begg:endg))                ; this%mfc_cons_actual_grc    (:)   = 0
+    allocate(this%mfc_rf_actual_grc (begg:endg))                  ; this%mfc_rf_actual_grc      (:)   = 0
  
-    allocate(this%input_mon_min_withd_grc (begg:endg))            ; this%input_mon_min_withd_grc      (:)   = nan
-    allocate(this%input_mon_min_cons_grc (begg:endg))             ; this%input_mon_min_cons_grc       (:)   = nan
-    allocate(this%min_withd_grc (begg:endg))                      ; this%min_withd_grc          (:)   = nan
-    allocate(this%min_cons_grc (begg:endg))                       ; this%min_cons_grc           (:)   = nan
-    allocate(this%min_withd_actual_grc (begg:endg))               ; this%min_withd_actual_grc   (:)   = nan
-    allocate(this%min_cons_actual_grc (begg:endg))                ; this%min_cons_actual_grc    (:)   = nan
-    allocate(this%min_rf_actual_grc (begg:endg))                  ; this%min_rf_actual_grc      (:)   = nan
+    allocate(this%input_mon_min_withd_grc (begg:endg))            ; this%input_mon_min_withd_grc      (:)   = 0
+    allocate(this%input_mon_min_cons_grc (begg:endg))             ; this%input_mon_min_cons_grc       (:)   = 0
+    allocate(this%min_withd_grc (begg:endg))                      ; this%min_withd_grc          (:)   = 0
+    allocate(this%min_cons_grc (begg:endg))                       ; this%min_cons_grc           (:)   = 0
+    allocate(this%min_withd_actual_grc (begg:endg))               ; this%min_withd_actual_grc   (:)   = 0
+    allocate(this%min_cons_actual_grc (begg:endg))                ; this%min_cons_actual_grc    (:)   = 0
+    allocate(this%min_rf_actual_grc (begg:endg))                  ; this%min_rf_actual_grc      (:)   = 0
  
     allocate(this%n_dom_and_liv_steps_left_grc    (begg:endg))  ; this%n_dom_and_liv_steps_left_grc     (:)   = 0
     allocate(this%n_ind_steps_left_grc    (begg:endg))          ; this%n_ind_steps_left_grc             (:)   = 0
@@ -493,181 +493,181 @@ module SectorWaterMod
 
     ! Add output variables
     ! Domestic sector:
-    this%input_mon_dom_withd_grc(begg:endg) = spval
+    this%input_mon_dom_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_DOM_WITHD', units='mm', &
          avgflag='A', long_name='input monthly domestic withdrawal', &
          ptr_gcell=this%input_mon_dom_withd_grc, default='inactive')
     
-    this%input_mon_dom_cons_grc(begg:endg) = spval
+    this%input_mon_dom_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_DOM_CONS', units='mm', &
          avgflag='A', long_name='input monthly domestic consumption', &
          ptr_gcell=this%input_mon_dom_cons_grc, default='inactive')
 
-    this%dom_cons_grc(begg:endg) = spval
+    this%dom_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='DOM_EXPECTED_CONS', units='mm/s', &
          avgflag='A', long_name='domestic expected consumption flux', &
          ptr_gcell=this%dom_cons_grc, default='inactive')
 
-    this%dom_cons_actual_grc(begg:endg) = spval
+    this%dom_cons_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='DOM_ACTUAL_CONS', units='mm/s', &
          avgflag='A', long_name='domestic actual consumption flux', &
          ptr_gcell=this%dom_cons_actual_grc, default='inactive')
  
-    this%dom_withd_actual_grc(begg:endg) = spval
+    this%dom_withd_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='DOM_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='domestic actual withdrawal flux', &
          ptr_gcell=this%dom_withd_actual_grc, default='inactive')
 
-    this%dom_withd_grc(begg:endg) = spval
+    this%dom_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='DOM_EXPECTED_WITHD', units='mm/s', &
          avgflag='A', long_name='domestic expected withdrawal flux', &
          ptr_gcell=this%dom_withd_grc, default='inactive')
 
-    this%dom_rf_actual_grc(begg:endg) = spval
+    this%dom_rf_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='DOM_ACTUAL_RF', units='mm/s', &
          avgflag='A', long_name='domestic actual return flow flux', &
          ptr_gcell=this%dom_rf_actual_grc, default='inactive')
  
    ! Livestock
-    this%input_mon_liv_withd_grc(begg:endg) = spval
+    this%input_mon_liv_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_LIV_WITHD', units='mm', &
          avgflag='A', long_name='input monthly livestock withdrawal', &
          ptr_gcell=this%input_mon_liv_withd_grc, default='inactive')
     
-    this%input_mon_liv_cons_grc(begg:endg) = spval
+    this%input_mon_liv_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_LIV_CONS', units='mm', &
          avgflag='A', long_name='input monthly livestock consumption', &
          ptr_gcell=this%input_mon_liv_cons_grc, default='inactive')
 
-    this%liv_cons_grc(begg:endg) = spval
+    this%liv_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='LIV_EXPECTED_CONS', units='mm/s', &
          avgflag='A', long_name='livestock expected consumption flux', &
          ptr_gcell=this%liv_cons_grc, default='inactive')
 
-    this%liv_cons_actual_grc(begg:endg) = spval
+    this%liv_cons_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='LIV_ACTUAL_CONS', units='mm/s', &
          avgflag='A', long_name='livestock actual consumption flux', &
          ptr_gcell=this%liv_cons_actual_grc, default='inactive')
  
-    this%liv_withd_actual_grc(begg:endg) = spval
+    this%liv_withd_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='LIV_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='livestock actual withdrawal flux', &
          ptr_gcell=this%liv_withd_actual_grc, default='inactive')
 
-    this%liv_withd_grc(begg:endg) = spval
+    this%liv_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='LIV_EXPECTED_WITHD', units='mm/s', &
          avgflag='A', long_name='livestock expected withdrawal flux', &
          ptr_gcell=this%liv_withd_grc, default='inactive')
 
-    this%liv_rf_actual_grc(begg:endg) = spval
+    this%liv_rf_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='LIV_ACTUAL_RF', units='mm/s', &
          avgflag='A', long_name='livestock actual return flow flux', &
          ptr_gcell=this%liv_rf_actual_grc, default='inactive')
 
    ! Thermoelectric:
-    this%input_mon_elec_withd_grc(begg:endg) = spval
+    this%input_mon_elec_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_ELEC_WITHD', units='mm', &
          avgflag='A', long_name='input monthly thermoelectric withdrawal', &
          ptr_gcell=this%input_mon_elec_withd_grc, default='inactive')
     
-    this%input_mon_elec_cons_grc(begg:endg) = spval
+    this%input_mon_elec_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_ELEC_CONS', units='mm', &
          avgflag='A', long_name='input monthly thermoelectric consumption', &
          ptr_gcell=this%input_mon_elec_cons_grc, default='inactive')
 
-    this%elec_cons_grc(begg:endg) = spval
+    this%elec_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='ELEC_EXPECTED_CONS', units='mm/s', &
          avgflag='A', long_name='thermoelectric expected consumption flux', &
          ptr_gcell=this%elec_cons_grc, default='inactive')
 
-    this%elec_cons_actual_grc(begg:endg) = spval
+    this%elec_cons_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='ELEC_ACTUAL_CONS', units='mm/s', &
          avgflag='A', long_name='thermoelectric actual consumption flux', &
          ptr_gcell=this%elec_cons_actual_grc, default='inactive')
  
-    this%elec_withd_actual_grc(begg:endg) = spval
+    this%elec_withd_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='ELEC_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='thermoelectric actual withdrawal flux', &
          ptr_gcell=this%elec_withd_actual_grc, default='inactive')
 
-    this%elec_withd_grc(begg:endg) = spval
+    this%elec_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='ELEC_EXPECTED_WITHD', units='mm/s', &
          avgflag='A', long_name='thermoelectric expected withdrawal flux', &
          ptr_gcell=this%elec_withd_grc, default='inactive')
 
-    this%elec_rf_actual_grc(begg:endg) = spval
+    this%elec_rf_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='ELEC_ACTUAL_RF', units='mm/s', &
          avgflag='A', long_name='thermoelectric actual return flow flux', &
          ptr_gcell=this%elec_rf_actual_grc, default='inactive')
 
    ! Manufacturing:
-    this%input_mon_mfc_withd_grc(begg:endg) = spval
+    this%input_mon_mfc_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_MFC_WITHD', units='mm', &
          avgflag='A', long_name='input monthly manufacturing withdrawal', &
          ptr_gcell=this%input_mon_mfc_withd_grc, default='inactive')
     
-    this%input_mon_mfc_cons_grc(begg:endg) = spval
+    this%input_mon_mfc_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_MFC_CONS', units='mm', &
          avgflag='A', long_name='input monthly manufacturing consumption', &
          ptr_gcell=this%input_mon_mfc_cons_grc, default='inactive')
 
-    this%mfc_cons_grc(begg:endg) = spval
+    this%mfc_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='MFC_EXPECTED_CONS', units='mm/s', &
          avgflag='A', long_name='manufacturing expected consumption flux', &
          ptr_gcell=this%mfc_cons_grc, default='inactive')
 
-    this%mfc_cons_actual_grc(begg:endg) = spval
+    this%mfc_cons_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='MFC_ACTUAL_CONS', units='mm/s', &
          avgflag='A', long_name='manufacturing actual consumption flux', &
          ptr_gcell=this%mfc_cons_actual_grc, default='inactive')
  
-    this%mfc_withd_actual_grc(begg:endg) = spval
+    this%mfc_withd_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='MFC_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='manufacturing actual withdrawal flux', &
          ptr_gcell=this%mfc_withd_actual_grc, default='inactive')
 
-    this%mfc_withd_grc(begg:endg) = spval
+    this%mfc_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='MFC_EXPECTED_WITHD', units='mm/s', &
          avgflag='A', long_name='manufacturing expected withdrawal flux', &
          ptr_gcell=this%mfc_withd_grc, default='inactive')
 
-    this%mfc_rf_actual_grc(begg:endg) = spval
+    this%mfc_rf_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='MFC_ACTUAL_RF', units='mm/s', &
          avgflag='A', long_name='manufacturing actual return flow flux', &
          ptr_gcell=this%mfc_rf_actual_grc, default='inactive')
 
    ! Mining:
-    this%input_mon_min_withd_grc(begg:endg) = spval
+    this%input_mon_min_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_MIN_WITHD', units='mm', &
          avgflag='A', long_name='input monthly mining withdrawal', &
          ptr_gcell=this%input_mon_min_withd_grc, default='inactive')
     
-    this%input_mon_min_cons_grc(begg:endg) = spval
+    this%input_mon_min_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='INPUT_MON_MIN_CONS', units='mm', &
          avgflag='A', long_name='input monthly mining consumption', &
          ptr_gcell=this%input_mon_min_cons_grc, default='inactive')
 
-    this%min_cons_grc(begg:endg) = spval
+    this%min_cons_grc(begg:endg) = 0
     call hist_addfld1d (fname='MIN_EXPECTED_CONS', units='mm/s', &
          avgflag='A', long_name='mining expected consumption flux', &
          ptr_gcell=this%min_cons_grc, default='inactive')
 
-    this%min_cons_actual_grc(begg:endg) = spval
+    this%min_cons_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='MIN_ACTUAL_CONS', units='mm/s', &
          avgflag='A', long_name='mining actual consumption flux', &
          ptr_gcell=this%min_cons_actual_grc, default='inactive')
  
-    this%min_withd_actual_grc(begg:endg) = spval
+    this%min_withd_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='MIN_ACTUAL_WITHD', units='mm/s', &
          avgflag='A', long_name='mining actual withdrawal flux', &
          ptr_gcell=this%min_withd_actual_grc, default='inactive')
 
-    this%min_withd_grc(begg:endg) = spval
+    this%min_withd_grc(begg:endg) = 0
     call hist_addfld1d (fname='MIN_EXPECTED_WITHD', units='mm/s', &
          avgflag='A', long_name='mining expected withdrawal flux', &
          ptr_gcell=this%min_withd_grc, default='inactive')
 
-    this%min_rf_actual_grc(begg:endg) = spval
+    this%min_rf_actual_grc(begg:endg) = 0
     call hist_addfld1d (fname='MIN_ACTUAL_RF', units='mm/s', &
          avgflag='A', long_name='mining actual return flow flux', &
          ptr_gcell=this%min_rf_actual_grc, default='inactive')
