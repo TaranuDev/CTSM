@@ -499,22 +499,6 @@ contains
 
        call t_stopf('drvinit')
 
-       if (sectorwater) then
-
-          call t_startf('sectorwater_calc_and_withdraw')
-
-          call CalcAndWithdrawSectorWaterFluxes( &
-               bounds = bounds_clump, &
-               soilhydrology_inst = soilhydrology_inst, &
-               sectorwater_inst = sectorwater_inst, &
-               water_inst = water_inst, &
-               volr       = water_inst%wateratm2lndbulk_inst%volrmch_grc(bounds_clump%begg:bounds_clump%endg), &
-               rof_prognostic = rof_prognostic)
-
-          call t_stopf('sectorwater_calc_and_withdraw')
-
-       end if
-
        if (irrigate) then
 
           call t_startf('irrigationwithdraw')
@@ -533,6 +517,23 @@ contains
           call t_stopf('irrigationwithdraw')
 
        end if
+
+       if (sectorwater) then
+
+          call t_startf('sectorwater_calc_and_withdraw')
+
+          call CalcAndWithdrawSectorWaterFluxes( &
+               bounds = bounds_clump, &
+               soilhydrology_inst = soilhydrology_inst, &
+               sectorwater_inst = sectorwater_inst, &
+               water_inst = water_inst, &
+               volr       = water_inst%wateratm2lndbulk_inst%volrmch_grc(bounds_clump%begg:bounds_clump%endg), &
+               rof_prognostic = rof_prognostic)
+
+          call t_stopf('sectorwater_calc_and_withdraw')
+
+       end if
+
 
        if (water_inst%DoConsistencyCheck()) then
           call t_startf("tracer_consistency_check")
