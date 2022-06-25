@@ -85,21 +85,69 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwa
    endif
    
    do g = bounds%begg, bounds%endg
-      water_inst%waterlnd2atmbulk_inst%qdom_withd_grc(g) = sectorwater_inst%dom_withd_actual_grc(g)
-      water_inst%waterlnd2atmbulk_inst%qdom_rf_grc(g) = sectorwater_inst%dom_rf_actual_grc(g)
-   
-      water_inst%waterlnd2atmbulk_inst%qliv_withd_grc(g) = sectorwater_inst%liv_withd_actual_grc(g)
-      water_inst%waterlnd2atmbulk_inst%qliv_rf_grc(g) = sectorwater_inst%liv_rf_actual_grc(g)
-   
-      water_inst%waterlnd2atmbulk_inst%qelec_withd_grc(g) = sectorwater_inst%elec_withd_actual_grc(g)
-      water_inst%waterlnd2atmbulk_inst%qelec_rf_grc(g) = sectorwater_inst%elec_rf_actual_grc(g)
-   
-      water_inst%waterlnd2atmbulk_inst%qmfc_withd_grc(g) = sectorwater_inst%mfc_withd_actual_grc(g)
-      water_inst%waterlnd2atmbulk_inst%qmfc_rf_grc(g) = sectorwater_inst%mfc_rf_actual_grc(g)
-   
-      water_inst%waterlnd2atmbulk_inst%qmin_withd_grc(g) = sectorwater_inst%min_withd_actual_grc(g)
-      water_inst%waterlnd2atmbulk_inst%qmin_rf_grc(g) = sectorwater_inst%min_rf_actual_grc(g)
-   
+      if (isnan(sectorwater_inst%dom_withd_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qdom_withd_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qdom_withd_grc(g) = sectorwater_inst%dom_withd_actual_grc(g)
+      endif
+ 
+      if (isnan(sectorwater_inst%dom_rf_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qdom_rf_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qdom_rf_grc(g) = sectorwater_inst%dom_rf_actual_grc(g)
+      endif
+ 
+      if (isnan(sectorwater_inst%liv_withd_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qliv_withd_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qliv_withd_grc(g) = sectorwater_inst%liv_withd_actual_grc(g)
+      endif
+ 
+      if (isnan(sectorwater_inst%liv_rf_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qliv_rf_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qliv_rf_grc(g) = sectorwater_inst%liv_rf_actual_grc(g)
+      endif
+ 
+ 
+      if (isnan(sectorwater_inst%elec_withd_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qelec_withd_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qelec_withd_grc(g) = sectorwater_inst%elec_withd_actual_grc(g)
+      endif
+ 
+      if (isnan(sectorwater_inst%elec_rf_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qelec_rf_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qelec_rf_grc(g) = sectorwater_inst%elec_rf_actual_grc(g)
+      endif
+ 
+ 
+      if (isnan(sectorwater_inst%mfc_withd_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qmfc_withd_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qmfc_withd_grc(g) = sectorwater_inst%mfc_withd_actual_grc(g)
+      endif
+ 
+      if (isnan(sectorwater_inst%mfc_rf_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qmfc_rf_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qmfc_rf_grc(g) = sectorwater_inst%mfc_rf_actual_grc(g)
+      endif
+ 
+ 
+      if (isnan(sectorwater_inst%min_withd_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qmin_withd_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qmin_withd_grc(g) = sectorwater_inst%min_withd_actual_grc(g)
+      endif
+ 
+      if (isnan(sectorwater_inst%min_rf_actual_grc(g))) then
+         water_inst%waterlnd2atmbulk_inst%qmin_rf_grc(g) = 0._r8
+      else
+         water_inst%waterlnd2atmbulk_inst%qmin_rf_grc(g) = sectorwater_inst%min_rf_actual_grc(g)
+      endif
+ 
    end do
    
    end subroutine CalcAndWithdrawSectorWaterFluxes
