@@ -174,6 +174,12 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    !   water_inst%bulk_and_tracers(0)%waterflux_inst%qflx_sectorwater_patch(p) = patch%wtlunit(p)*total_cons(g)
    !end do
 
+   do i = water_inst%bulk_and_tracers_beg, water_inst%bulk_and_tracers_end
+      associate(w => water_inst%bulk_and_tracers(i))
+      w%waterflux_inst%qflx_sectorwater_patch(p) = total_cons(g)
+      end associate
+   end do
+
    deallocate(total_cons)
 
    end subroutine CalcAndWithdrawSectorWaterFluxes

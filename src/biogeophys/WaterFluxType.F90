@@ -849,6 +849,9 @@ contains
     this%qflx_gw_con_irrig_col (bounds%begc:bounds%endc)      = 0.0_r8
     this%qflx_irrig_drip_patch (bounds%begp:bounds%endp)      = 0.0_r8
     this%qflx_irrig_sprinkler_patch (bounds%begp:bounds%endp) = 0.0_r8
+
+    this%qflx_sectorwater_patch (bounds%begp:bounds%endp)      = 0.0_r8
+
     
     this%qflx_liqevap_from_top_layer_col(bounds%begc:bounds%endc) = 0.0_r8
     this%qflx_liqdew_to_top_layer_col(bounds%begc:bounds%endc)    = 0.0_r8
