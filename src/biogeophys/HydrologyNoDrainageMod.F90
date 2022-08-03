@@ -56,9 +56,11 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    ! !USES:
    ! use SoilHydrologyMod       , only : WithdrawGroundwaterSectorWater
    use clm_time_manager       , only : is_beg_curr_day
+   use PatchType    , only : patch
+
    !
    ! !ARGUMENTS:
-   integer  :: g  ! gridcell index
+   integer  :: g, fp, p  ! gridcell index
    integer                        , intent(in)    :: num_soilp            ! number of points in filter_soilp
    integer                        , intent(in)    :: filter_soilp(:)      ! patch filter for soil points
    integer                        , intent(in)    :: num_natvegp          ! number of points in filter_natvegp
@@ -72,7 +74,7 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    real(r8), intent(in) :: volr( bounds%begg: )
 
    ! gridcell total consumption related to human water usage
-   real(r8) :: total_cons(:)
+   real(r8), pointer :: total_cons(:)
    allocate(total_cons(bounds%begg:bounds%endg))
    
    ! whether we're running with a prognostic ROF component; this is needed to determine
@@ -91,7 +93,7 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    if (is_beg_curr_day()) then
       call sectorwater_inst%CalcSectorWaterNeeded(bounds, volr, rof_prognostic)
    endif
-   
+
    do g = bounds%begg, bounds%endg
       if (isnan(sectorwater_inst%dom_withd_actual_grc(g))) then
          water_inst%waterlnd2atmbulk_inst%qdom_withd_grc(g) = 0._r8
