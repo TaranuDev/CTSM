@@ -75,7 +75,6 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
 
    ! gridcell total consumption related to human water usage
    real(r8), pointer :: total_cons(:)
-   allocate(total_cons(bounds%begg:bounds%endg))
    
    ! whether we're running with a prognostic ROF component; this is needed to determine
    ! whether we can limit irrigation based on river volume.
@@ -90,6 +89,9 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    ! Read withdrawal and consumption data from input surfdata
    ! Compute the withdrawal, consumption and return flow (expected and actual)
    ! To limit computation time, call this subroutine only once a day
+
+   allocate(total_cons(bounds%begg:bounds%endg))
+
    if (is_beg_curr_day()) then
       call sectorwater_inst%CalcSectorWaterNeeded(bounds, volr, rof_prognostic)
    endif
