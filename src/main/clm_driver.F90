@@ -505,6 +505,10 @@ contains
 
           call CalcAndWithdrawSectorWaterFluxes( &
                bounds = bounds_clump, &
+               num_soilp = filter(nc)%num_soilp, &
+               filter_soilp = filter(nc)%soilp, &
+               num_natvegp = filter(nc)%num_natvegp, &
+               filter_natvegp =  filter(nc)%natvegp, &
                soilhydrology_inst = soilhydrology_inst, &
                sectorwater_inst = sectorwater_inst, &
                water_inst = water_inst, &

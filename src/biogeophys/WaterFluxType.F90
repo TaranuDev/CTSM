@@ -104,6 +104,9 @@ module WaterFluxType
      real(r8), pointer :: qflx_irrig_drip_patch     (:)   ! patch drip irrigation
      real(r8), pointer :: qflx_irrig_sprinkler_patch(:)   ! patch sprinkler irrigation
 
+     real(r8), pointer :: qflx_sectorwater_patch     (:)  ! patch consumption flow for sectoral water usage (domestic+livestock+thermoelectric+manufacturing+mining)
+
+
      ! Objects that help convert once-per-year dynamic land cover changes into fluxes
      ! that are dribbled throughout the year
      type(annual_flux_dribbler_type) :: qflx_liq_dynbal_dribbler
@@ -366,6 +369,10 @@ contains
          bounds = bounds, subgrid_level = subgrid_level_patch)
 
     call AllocateVar1d(var = this%qflx_irrig_sprinkler_patch, name = 'qflx_irrig_sprinkler_patch', &
+         container = tracer_vars, &
+         bounds = bounds, subgrid_level = subgrid_level_patch)
+
+    call AllocateVar1d(var = this%qflx_sectorwater_patch, name = 'qflx_sectorwater_patch', &
          container = tracer_vars, &
          bounds = bounds, subgrid_level = subgrid_level_patch)
     
@@ -799,6 +806,15 @@ contains
          avgflag='A', &
          long_name=this%info%lname('water added via sprinkler irrigation'), &
          ptr_patch=this%qflx_irrig_sprinkler_patch, default='inactive')
+
+
+    this%qflx_sectorwater_patch(begp:endp) = spval
+    call hist_addfld1d ( &
+         fname=this%info%fname('QSECTORWATER_CONS'), &
+         units='mm/s', &
+         avgflag='A', &
+         long_name=this%info%lname('water added to surface soil due to sectoral water usage'), &
+         ptr_patch=this%qflx_sectorwater_patch, default='inactive')
 
   end subroutine InitHistory
   

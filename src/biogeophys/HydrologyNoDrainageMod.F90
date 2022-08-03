@@ -48,7 +48,7 @@ Module HydrologyNoDrainageMod
 
 contains
   !-----------------------------------------------------------------------
-subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwater_inst, water_inst, volr, rof_prognostic)
+subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num_natvegp, filter_natvegp,  soilhydrology_inst, sectorwater_inst, water_inst, volr, rof_prognostic)
    !
    ! !DESCRIPTION:
    ! Calculates sector water withdrawal fluxes and withdraws from groundwater
@@ -59,6 +59,10 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwa
    !
    ! !ARGUMENTS:
    integer  :: g  ! gridcell index
+   integer                        , intent(in)    :: num_soilp            ! number of points in filter_soilp
+   integer                        , intent(in)    :: filter_soilp(:)      ! patch filter for soil points
+   integer                        , intent(in)    :: num_natvegp          ! number of points in filter_natvegp
+   integer                        , intent(in)    :: filter_natvegp(:)    ! patch filter for natural vegetation points
    type(bounds_type)              , intent(in)    :: bounds
    type(soilhydrology_type)       , intent(in)    :: soilhydrology_inst
    type(sectorwater_type)         , intent(inout) :: sectorwater_inst
@@ -66,6 +70,10 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwa
    
    ! river water volume (m3) (ignored if rof_prognostic is .false.)
    real(r8), intent(in) :: volr( bounds%begg: )
+
+   ! gridcell total consumption related to human water usage
+   real(r8) :: total_cons(:)
+   allocate(total_cons(bounds%begg:bounds%endg))
    
    ! whether we're running with a prognostic ROF component; this is needed to determine
    ! whether we can limit irrigation based on river volume.
@@ -148,8 +156,22 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwa
          water_inst%waterlnd2atmbulk_inst%qmin_rf_grc(g) = sectorwater_inst%min_rf_actual_grc(g)
       endif
  
+
+      ! Sector water total consumption for the gridcell g:
+      total_cons(g) = sectorwater_inst%dom_cons_actual_grc(g) + sectorwater_inst%liv_cons_actual_grc(g) + sectorwater_inst%elec_cons_actual_grc(g) + &
+                      sectorwater_inst%mfc_cons_actual_grc(g)  + sectorwater_inst%min_cons_actual_grc(g)
+
    end do
    
+   do fp = 1, num_natvegp
+      p = filter_natvegp(fp)
+      g = patch%gridcell(p)
+  
+      waterflux_inst%qflx_sectorwater_patch(p) = patch%wtlunit(p)*total_cons(g)
+   end do
+
+   deallocate(total_cons)
+
    end subroutine CalcAndWithdrawSectorWaterFluxes
    
  
