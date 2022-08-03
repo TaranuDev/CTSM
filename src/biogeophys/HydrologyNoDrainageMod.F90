@@ -167,12 +167,12 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
 
    end do
    
-   do fp = 1, num_natvegp
-      p = filter_natvegp(fp)
-      g = patch%gridcell(p)
-  
-      water_inst%bulk_and_tracers(0)%waterflux_inst%qflx_sectorwater_patch(p) = patch%wtlunit(p)*total_cons(g)
-   end do
+   !do fp = 1, num_natvegp
+   !   p = filter_natvegp(fp)
+   !   g = patch%gridcell(p)
+   !
+   !   water_inst%bulk_and_tracers(0)%waterflux_inst%qflx_sectorwater_patch(p) = patch%wtlunit(p)*total_cons(g)
+   !end do
 
    deallocate(total_cons)
 
