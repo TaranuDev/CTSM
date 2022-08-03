@@ -57,10 +57,12 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    ! use SoilHydrologyMod       , only : WithdrawGroundwaterSectorWater
    use clm_time_manager       , only : is_beg_curr_day
    use PatchType    , only : patch
+   use LandunitType , only : lun
+   use landunit_varcon, only : istsoil
 
    !
    ! !ARGUMENTS:
-   integer  :: g, fp, p  ! gridcell index
+   integer  :: g, p, l  ! gridcell index
    integer                        , intent(in)    :: num_soilp            ! number of points in filter_soilp
    integer                        , intent(in)    :: filter_soilp(:)      ! patch filter for soil points
    integer                        , intent(in)    :: num_natvegp          ! number of points in filter_natvegp
@@ -176,7 +178,20 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
 
    do i = water_inst%bulk_and_tracers_beg, water_inst%bulk_and_tracers_end
       associate(w => water_inst%bulk_and_tracers(i))
-      w%waterflux_inst%qflx_sectorwater_patch(p) = total_cons(g)
+
+      do p = bounds%begp,bounds%endp
+         g = patch%gridcell(p)
+         l = patch%landunit(p)
+
+         if (lun%itype(l) == istsoil) then
+            w%waterflux_inst%qflx_sectorwater_patch(p) = total_cons(g)*patch%wtlunit(p)
+         
+         else
+            w%waterflux_inst%qflx_sectorwater_patch(p) = 0._r8
+         end if
+      end do
+
+      
       end associate
    end do
 
