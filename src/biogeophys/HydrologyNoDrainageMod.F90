@@ -64,7 +64,7 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
 
    !
    ! !ARGUMENTS:
-   integer  :: g, p, l  ! gridcell index
+   integer  :: g, p, l, c  ! gridcell index
    integer                        , intent(in)    :: num_soilp            ! number of points in filter_soilp
    integer                        , intent(in)    :: filter_soilp(:)      ! patch filter for soil points
    integer                        , intent(in)    :: num_natvegp          ! number of points in filter_natvegp
