@@ -104,7 +104,7 @@ module WaterFluxType
      real(r8), pointer :: qflx_irrig_drip_patch     (:)   ! patch drip irrigation
      real(r8), pointer :: qflx_irrig_sprinkler_patch(:)   ! patch sprinkler irrigation
 
-     real(r8), pointer :: qflx_sectorwater_patch     (:)  ! patch consumption flow for sectoral water usage (domestic+livestock+thermoelectric+manufacturing+mining)
+     real(r8), pointer :: qflx_sectorwater_col      (:)   ! column consumption flow for sectoral water usage (domestic+livestock+thermoelectric+manufacturing+mining)
 
 
      ! Objects that help convert once-per-year dynamic land cover changes into fluxes
@@ -372,9 +372,9 @@ contains
          container = tracer_vars, &
          bounds = bounds, subgrid_level = subgrid_level_patch)
 
-    call AllocateVar1d(var = this%qflx_sectorwater_patch, name = 'qflx_sectorwater_patch', &
+    call AllocateVar1d(var = this%qflx_sectorwater_col, name = 'qflx_sectorwater_col', &
          container = tracer_vars, &
-         bounds = bounds, subgrid_level = subgrid_level_patch)
+         bounds = bounds, subgrid_level = subgrid_level_column)
     
     this%qflx_liq_dynbal_dribbler = annual_flux_dribbler_gridcell( &
          bounds = bounds, &
@@ -808,13 +808,13 @@ contains
          ptr_patch=this%qflx_irrig_sprinkler_patch, default='inactive')
 
 
-    this%qflx_sectorwater_patch(begp:endp) = spval
+    this%qflx_sectorwater_col(begc:endc) = spval
     call hist_addfld1d ( &
          fname=this%info%fname('QSECTORWATER_CONS'), &
          units='mm/s', &
          avgflag='A', &
          long_name=this%info%lname('water added to surface soil due to sectoral water usage'), &
-         ptr_patch=this%qflx_sectorwater_patch, default='inactive')
+         ptr_col=this%qflx_sectorwater_col, default='inactive')
 
   end subroutine InitHistory
   
@@ -850,7 +850,7 @@ contains
     this%qflx_irrig_drip_patch (bounds%begp:bounds%endp)      = 0.0_r8
     this%qflx_irrig_sprinkler_patch (bounds%begp:bounds%endp) = 0.0_r8
 
-    this%qflx_sectorwater_patch (bounds%begp:bounds%endp)      = 0.0_r8
+    this%qflx_sectorwater_col (bounds%begc:bounds%endc)      = 0.0_r8
 
     
     this%qflx_liqevap_from_top_layer_col(bounds%begc:bounds%endc) = 0.0_r8

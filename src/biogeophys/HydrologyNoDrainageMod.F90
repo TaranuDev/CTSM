@@ -56,9 +56,11 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    ! !USES:
    ! use SoilHydrologyMod       , only : WithdrawGroundwaterSectorWater
    use clm_time_manager       , only : is_beg_curr_day
+   use ColumnType   , only : col
    use PatchType    , only : patch
    use LandunitType , only : lun
    use landunit_varcon, only : istsoil
+
 
    !
    ! !ARGUMENTS:
@@ -198,15 +200,26 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    do i = water_inst%bulk_and_tracers_beg, water_inst%bulk_and_tracers_end
       associate(w => water_inst%bulk_and_tracers(i))
 
-      do p = bounds%begp,bounds%endp
-         g = patch%gridcell(p)
-         l = patch%landunit(p)
+   !   do p = bounds%begp,bounds%endp
+   !      g = patch%gridcell(p)
+   !      l = patch%landunit(p)
 
-         if (lun%itype(l) == istsoil) then
-            w%waterflux_inst%qflx_sectorwater_patch(p) = total_cons(g)*patch%wtlunit(p)
+   !      if (lun%itype(l) == istsoil) then
+   !         w%waterflux_inst%qflx_sectorwater_patch(p) = total_cons(g)*patch%wtlunit(p)
+   !      else
+   !         w%waterflux_inst%qflx_sectorwater_patch(p) = 0._r8
+   !      end if
+   !   end do
+
+      do c = bounds%begp,bounds%endp
+         g = col%gridcell(c)
+
+         if (col%lun_itype == istsoil) then
+            w%waterflux_inst%qflx_sectorwater_col(c) = total_cons(g)
          else
-            w%waterflux_inst%qflx_sectorwater_patch(p) = 0._r8
+            w%waterflux_inst%qflx_sectorwater_col(c) = 0._r8
          end if
+
       end do
 
       
