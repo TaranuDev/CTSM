@@ -162,7 +162,26 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
          water_inst%waterlnd2atmbulk_inst%qmin_rf_grc(g) = sectorwater_inst%min_rf_actual_grc(g)
       endif
  
+      if (isnan(sectorwater_inst%dom_cons_actual_grc(g))) then
+         sectorwater_inst%dom_cons_actual_grc(g) = 0._r8
+      endif
 
+      if (isnan(sectorwater_inst%liv_cons_actual_grc(g))) then
+         sectorwater_inst%liv_cons_actual_grc(g) = 0._r8
+      endif
+
+      if (isnan(sectorwater_inst%elec_cons_actual_grc(g))) then
+         sectorwater_inst%elec_cons_actual_grc(g) = 0._r8
+      endif
+
+      if (isnan(sectorwater_inst%mfc_cons_actual_grc(g))) then
+         sectorwater_inst%mfc_cons_actual_grc(g) = 0._r8
+      endif
+
+      if (isnan(sectorwater_inst%min_cons_actual_grc(g))) then
+         sectorwater_inst%min_cons_actual_grc(g) = 0._r8
+      endif
+      
       ! Sector water total consumption for the gridcell g:
       total_cons(g) = sectorwater_inst%dom_cons_actual_grc(g) + sectorwater_inst%liv_cons_actual_grc(g) + sectorwater_inst%elec_cons_actual_grc(g) + &
                       sectorwater_inst%mfc_cons_actual_grc(g)  + sectorwater_inst%min_cons_actual_grc(g)
@@ -185,7 +204,6 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
 
          if (lun%itype(l) == istsoil) then
             w%waterflux_inst%qflx_sectorwater_patch(p) = total_cons(g)*patch%wtlunit(p)
-         
          else
             w%waterflux_inst%qflx_sectorwater_patch(p) = 0._r8
          end if
