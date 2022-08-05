@@ -211,7 +211,7 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    !      end if
    !   end do
 
-      do c = bounds%begp,bounds%endp
+      do c = bounds%begc,bounds%endc
          g = col%gridcell(c)
 
          if (col%lun_itype(c) == istsoil) then
