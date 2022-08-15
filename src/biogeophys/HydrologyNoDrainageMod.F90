@@ -211,27 +211,27 @@ subroutine CalcAndWithdrawSectorWaterFluxes(bounds, num_soilp, filter_soilp, num
    !      end if
    !   end do
 
-      ! do c = bounds%begc,bounds%endc
-      !    g = col%gridcell(c)
-
-      !    if (col%lun_itype(c) == istsoil) then
-      !       w%waterflux_inst%qflx_sectorwater_col(c) = total_cons(g)
-      !    else
-      !       w%waterflux_inst%qflx_sectorwater_col(c) = 0._r8
-      !    end if
-
-      ! end do
-
       do c = bounds%begc,bounds%endc
          g = col%gridcell(c)
 
          if (col%lun_itype(c) == istsoil) then
-            w%waterflux_inst%qflx_sectorwater_col(c) = total_cons(g)*(1.0/col%wtlunit(c))
+            w%waterflux_inst%qflx_sectorwater_col(c) = total_cons(g)
          else
             w%waterflux_inst%qflx_sectorwater_col(c) = 0._r8
          end if
 
       end do
+
+      !do c = bounds%begc,bounds%endc
+      !   g = col%gridcell(c)
+
+      !    if (col%lun_itype(c) == istsoil) then
+      !       w%waterflux_inst%qflx_sectorwater_col(c) = total_cons(g)*(1.0/col%wtlunit(c))
+      !    else
+      !       w%waterflux_inst%qflx_sectorwater_col(c) = 0._r8
+      !    end if
+
+      ! end do
 
       
       end associate
