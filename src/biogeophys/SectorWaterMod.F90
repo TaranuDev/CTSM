@@ -8,7 +8,8 @@ module SectorWaterMod
     use clm_varctl       , only : iulog
     use clm_time_manager , only : get_curr_date
     use WaterType        , only : water_type
-    use GridcellType     , only : grc                         
+    use GridcellType     , only : grc           
+    use clm_time_manager , only : get_step_size              
     use ncdio_pio
     
  
@@ -38,6 +39,8 @@ module SectorWaterMod
        ! Private data members; set in initialization:
        
        type(sectorwater_params_type) :: params
+
+       integer :: dtime                ! land model time step (sec)
  
        ! Private data members; time-varying:
        ! naming: dom = domestic, liv = livestock, elec = thermoelectric, mfc = manufacturing, min = mining
@@ -82,6 +85,9 @@ module SectorWaterMod
        real(r8), pointer :: min_withd_actual_grc      (:) ! actual withdrawal flux for the day [mm/s]
        real(r8), pointer :: min_cons_actual_grc       (:) ! actual consumption flux for the day  [mm/s]
        real(r8), pointer :: min_rf_actual_grc         (:) ! actual return flow flux for the day  [mm/s]
+
+       real(r8), pointer :: sectorwater_total_actual_withd (:) ! total actual water withdrawal done for all sectors (except irrigation) during 1 coupling period with ROF model (m3)
+
        
        
     contains
@@ -290,45 +296,48 @@ module SectorWaterMod
  
           begg = bounds%begg; endg= bounds%endg   
           
-          allocate(this%input_mon_dom_withd_grc (begg:endg))            ; this%input_mon_dom_withd_grc      (:)   = 0
-          allocate(this%input_mon_dom_cons_grc (begg:endg))             ; this%input_mon_dom_cons_grc       (:)   = 0
-          allocate(this%dom_withd_grc (begg:endg))                      ; this%dom_withd_grc                (:)   = 0
-          allocate(this%dom_cons_grc (begg:endg))                       ; this%dom_cons_grc                 (:)   = 0
-          allocate(this%dom_withd_actual_grc (begg:endg))               ; this%dom_withd_actual_grc         (:)   = 0
-          allocate(this%dom_cons_actual_grc (begg:endg))                ; this%dom_cons_actual_grc          (:)   = 0
-          allocate(this%dom_rf_actual_grc (begg:endg))                  ; this%dom_rf_actual_grc            (:)   = 0
+          allocate(this%input_mon_dom_withd_grc (begg:endg))            ; this%input_mon_dom_withd_grc        (:)   = 0
+          allocate(this%input_mon_dom_cons_grc (begg:endg))             ; this%input_mon_dom_cons_grc         (:)   = 0
+          allocate(this%dom_withd_grc (begg:endg))                      ; this%dom_withd_grc                  (:)   = 0
+          allocate(this%dom_cons_grc (begg:endg))                       ; this%dom_cons_grc                   (:)   = 0
+          allocate(this%dom_withd_actual_grc (begg:endg))               ; this%dom_withd_actual_grc           (:)   = 0
+          allocate(this%dom_cons_actual_grc (begg:endg))                ; this%dom_cons_actual_grc            (:)   = 0
+          allocate(this%dom_rf_actual_grc (begg:endg))                  ; this%dom_rf_actual_grc              (:)   = 0
  
-          allocate(this%input_mon_liv_withd_grc (begg:endg))            ; this%input_mon_liv_withd_grc      (:)   = 0
-          allocate(this%input_mon_liv_cons_grc (begg:endg))             ; this%input_mon_liv_cons_grc       (:)   = 0
-          allocate(this%liv_withd_grc (begg:endg))                      ; this%liv_withd_grc                (:)   = 0
-          allocate(this%liv_cons_grc (begg:endg))                       ; this%liv_cons_grc                 (:)   = 0
-          allocate(this%liv_withd_actual_grc (begg:endg))               ; this%liv_withd_actual_grc         (:)   = 0
-          allocate(this%liv_cons_actual_grc (begg:endg))                ; this%liv_cons_actual_grc          (:)   = 0
-          allocate(this%liv_rf_actual_grc (begg:endg))                  ; this%liv_rf_actual_grc            (:)   = 0
+          allocate(this%input_mon_liv_withd_grc (begg:endg))            ; this%input_mon_liv_withd_grc        (:)   = 0
+          allocate(this%input_mon_liv_cons_grc (begg:endg))             ; this%input_mon_liv_cons_grc         (:)   = 0
+          allocate(this%liv_withd_grc (begg:endg))                      ; this%liv_withd_grc                  (:)   = 0
+          allocate(this%liv_cons_grc (begg:endg))                       ; this%liv_cons_grc                   (:)   = 0
+          allocate(this%liv_withd_actual_grc (begg:endg))               ; this%liv_withd_actual_grc           (:)   = 0
+          allocate(this%liv_cons_actual_grc (begg:endg))                ; this%liv_cons_actual_grc            (:)   = 0
+          allocate(this%liv_rf_actual_grc (begg:endg))                  ; this%liv_rf_actual_grc              (:)   = 0
  
-          allocate(this%input_mon_elec_withd_grc (begg:endg))           ; this%input_mon_elec_withd_grc     (:)   = 0
-          allocate(this%input_mon_elec_cons_grc (begg:endg))            ; this%input_mon_elec_cons_grc      (:)   = 0
-          allocate(this%elec_withd_grc (begg:endg))                     ; this%elec_withd_grc               (:)   = 0
-          allocate(this%elec_cons_grc (begg:endg))                      ; this%elec_cons_grc                (:)   = 0
-          allocate(this%elec_withd_actual_grc (begg:endg))              ; this%elec_withd_actual_grc        (:)   = 0
-          allocate(this%elec_cons_actual_grc (begg:endg))               ; this%elec_cons_actual_grc         (:)   = 0
-          allocate(this%elec_rf_actual_grc (begg:endg))                 ; this%elec_rf_actual_grc           (:)   = 0
+          allocate(this%input_mon_elec_withd_grc (begg:endg))           ; this%input_mon_elec_withd_grc       (:)   = 0
+          allocate(this%input_mon_elec_cons_grc (begg:endg))            ; this%input_mon_elec_cons_grc        (:)   = 0
+          allocate(this%elec_withd_grc (begg:endg))                     ; this%elec_withd_grc                 (:)   = 0
+          allocate(this%elec_cons_grc (begg:endg))                      ; this%elec_cons_grc                  (:)   = 0
+          allocate(this%elec_withd_actual_grc (begg:endg))              ; this%elec_withd_actual_grc          (:)   = 0
+          allocate(this%elec_cons_actual_grc (begg:endg))               ; this%elec_cons_actual_grc           (:)   = 0
+          allocate(this%elec_rf_actual_grc (begg:endg))                 ; this%elec_rf_actual_grc             (:)   = 0
  
-          allocate(this%input_mon_mfc_withd_grc (begg:endg))            ; this%input_mon_mfc_withd_grc      (:)   = 0
-          allocate(this%input_mon_mfc_cons_grc (begg:endg))             ; this%input_mon_mfc_cons_grc       (:)   = 0
-          allocate(this%mfc_withd_grc (begg:endg))                      ; this%mfc_withd_grc                (:)   = 0
-          allocate(this%mfc_cons_grc (begg:endg))                       ; this%mfc_cons_grc                 (:)   = 0
-          allocate(this%mfc_withd_actual_grc (begg:endg))               ; this%mfc_withd_actual_grc         (:)   = 0
-          allocate(this%mfc_cons_actual_grc (begg:endg))                ; this%mfc_cons_actual_grc          (:)   = 0
-          allocate(this%mfc_rf_actual_grc (begg:endg))                  ; this%mfc_rf_actual_grc            (:)   = 0
+          allocate(this%input_mon_mfc_withd_grc (begg:endg))            ; this%input_mon_mfc_withd_grc        (:)   = 0
+          allocate(this%input_mon_mfc_cons_grc (begg:endg))             ; this%input_mon_mfc_cons_grc         (:)   = 0
+          allocate(this%mfc_withd_grc (begg:endg))                      ; this%mfc_withd_grc                  (:)   = 0
+          allocate(this%mfc_cons_grc (begg:endg))                       ; this%mfc_cons_grc                   (:)   = 0
+          allocate(this%mfc_withd_actual_grc (begg:endg))               ; this%mfc_withd_actual_grc           (:)   = 0
+          allocate(this%mfc_cons_actual_grc (begg:endg))                ; this%mfc_cons_actual_grc            (:)   = 0
+          allocate(this%mfc_rf_actual_grc (begg:endg))                  ; this%mfc_rf_actual_grc              (:)   = 0
  
-          allocate(this%input_mon_min_withd_grc (begg:endg))            ; this%input_mon_min_withd_grc      (:)   = 0
-          allocate(this%input_mon_min_cons_grc (begg:endg))             ; this%input_mon_min_cons_grc       (:)   = 0
-          allocate(this%min_withd_grc (begg:endg))                      ; this%min_withd_grc                (:)   = 0
-          allocate(this%min_cons_grc (begg:endg))                       ; this%min_cons_grc                 (:)   = 0
-          allocate(this%min_withd_actual_grc (begg:endg))               ; this%min_withd_actual_grc         (:)   = 0
-          allocate(this%min_cons_actual_grc (begg:endg))                ; this%min_cons_actual_grc          (:)   = 0
-          allocate(this%min_rf_actual_grc (begg:endg))                  ; this%min_rf_actual_grc            (:)   = 0
+          allocate(this%input_mon_min_withd_grc (begg:endg))            ; this%input_mon_min_withd_grc        (:)   = 0
+          allocate(this%input_mon_min_cons_grc (begg:endg))             ; this%input_mon_min_cons_grc         (:)   = 0
+          allocate(this%min_withd_grc (begg:endg))                      ; this%min_withd_grc                  (:)   = 0
+          allocate(this%min_cons_grc (begg:endg))                       ; this%min_cons_grc                   (:)   = 0
+          allocate(this%min_withd_actual_grc (begg:endg))               ; this%min_withd_actual_grc           (:)   = 0
+          allocate(this%min_cons_actual_grc (begg:endg))                ; this%min_cons_actual_grc            (:)   = 0
+          allocate(this%min_rf_actual_grc (begg:endg))                  ; this%min_rf_actual_grc              (:)   = 0
+
+          allocate(this%sectorwater_total_actual_withd (begg:endg))     ; this%sectorwater_total_actual_withd (:)   = 0
+
      end subroutine SectorWaterInitAllocate
  
  
@@ -547,7 +556,9 @@ module SectorWaterMod
           type(bounds_type)      , intent(in)     :: bounds
           
           character(len=*), parameter :: subname = 'InitCold'
-          !-----------------------------------------------------------------------          
+          !-----------------------------------------------------------------------  
+          
+          this%dtime = get_step_size()
           this%input_mon_dom_withd_grc(bounds%begg:bounds%endg)  = 0._r8
           this%input_mon_liv_withd_grc(bounds%begg:bounds%endg)  = 0._r8
           this%input_mon_elec_withd_grc(bounds%begg:bounds%endg) = 0._r8
@@ -589,6 +600,9 @@ module SectorWaterMod
           this%elec_rf_actual_grc(bounds%begg:bounds%endg)       = 0._r8
           this%mfc_rf_actual_grc(bounds%begg:bounds%endg)        = 0._r8
           this%min_rf_actual_grc(bounds%begg:bounds%endg)        = 0._r8
+
+          this%sectorwater_total_actual_withd(bounds%begg:bounds%endg)        = 0._r8
+
      
      end subroutine SectorWaterInitCold
  
@@ -645,6 +659,9 @@ module SectorWaterMod
           deallocate(this%min_withd_actual_grc)
           deallocate(this%min_cons_actual_grc)
           deallocate(this%min_rf_actual_grc)
+
+          deallocate(this%sectorwater_total_actual_withd)
+
 
      end subroutine sectorWaterClean
  
@@ -998,6 +1015,15 @@ module SectorWaterMod
                this%min_cons_actual_grc(g)   = min_consumption_volr_limited(g)
                
                this%min_rf_actual_grc(g)     = this%min_withd_actual_grc(g) - this%min_cons_actual_grc(g)
+
+               ! Total actual withdrawal flow flux for all sectors
+               this%sectorwater_total_actual_withd(g) =  (this%dom_withd_actual_grc(g) + this%liv_withd_actual_grc(g) + &
+                                                          this%elec_withd_actual_grc(g) + this%mfc_withd_actual_grc(g) + &
+                                                          this%min_withd_actual_grc(g)) * this%dtime * grc%area(g) * m3_over_km2_to_mm * 6._r8 
+                ! instead of 6._r8 we should multiply by the relative coupling frequency between land/rof model (e.g. default coupling frequency for land model 48 per day, while for ROF is only 8 times, due the ratio 6)
+                ! in principle we can get this info from the NCPL variables in the env_run.xml (e.g. LND_NCPL/ROF_NCPL), but I am not sure how to get it directly from here
+                ! If not possible to access LND_NCPL/ROF_NCPL from here, we can maybe create a namelist variable with default value 6 and the user can change it if needed after creating the case and confirming the NCPL values
+                ! But this seems a sub-optimal solution...
           end do
           
      end subroutine CalcSectorWaterNeeded
