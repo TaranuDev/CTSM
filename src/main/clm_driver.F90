@@ -796,6 +796,7 @@ contains
                h2osoi_liq         = water_inst%waterstatebulk_inst%h2osoi_liq_col&
                (bounds_clump%begc:bounds_clump%endc , 1:nlevgrnd), &
                volr               = water_inst%wateratm2lndbulk_inst%volrmch_grc(bounds_clump%begg:bounds_clump%endg), &
+               sectorwater_total_actual_withd = sectorwater_inst%sectorwater_total_actual_withd(bounds_clump%begg:bounds_clump%endg), &
                rof_prognostic     = rof_prognostic)
           call t_stopf('irrigationneeded')
 
