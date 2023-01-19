@@ -801,7 +801,7 @@ module SectorWaterMod
 
      endsubroutine ReadSectorWaterData
  
-     subroutine CalcSectorWaterNeeded(this, bounds, volr, rof_prognostic)
+     subroutine CalcSectorWaterNeeded(this, bounds, irrig_length, volr, rof_prognostic)
  
           use shr_const_mod      , only : SHR_CONST_TKFRZ
           use clm_time_manager   , only : get_curr_date, is_end_curr_month, get_curr_days_per_year
@@ -810,6 +810,8 @@ module SectorWaterMod
           class(sectorwater_type) , intent(inout) :: this
           type(bounds_type)       , intent(in)    :: bounds
           
+          ! durration of irrigation process
+          integer, intent(in)  :: irrig_length
           ! river water volume (m3) (ignored if rof_prognostic is .false.)
           real(r8), intent(in) :: volr(bounds%begg:bounds%endg)
           
@@ -1016,14 +1018,10 @@ module SectorWaterMod
                
                this%min_rf_actual_grc(g)     = this%min_withd_actual_grc(g) - this%min_cons_actual_grc(g)
 
-               ! Total actual withdrawal flow flux for all sectors
+               ! Total actual withdrawal flow flux for all sectors during one irrigation event (default irrigation deficit computed once a day and the withdrawal happens over a period of 4 hours -> irrig_length)
                this%sectorwater_total_actual_withd(g) =  (this%dom_withd_actual_grc(g) + this%liv_withd_actual_grc(g) + &
                                                           this%elec_withd_actual_grc(g) + this%mfc_withd_actual_grc(g) + &
-                                                          this%min_withd_actual_grc(g)) * this%dtime * grc%area(g) * m3_over_km2_to_mm * 6._r8 
-                ! instead of 6._r8 we should multiply by the relative coupling frequency between land/rof model (e.g. default coupling frequency for land model 48 per day, while for ROF is only 8 times, due the ratio 6)
-                ! in principle we can get this info from the NCPL variables in the env_run.xml (e.g. LND_NCPL/ROF_NCPL), but I am not sure how to get it directly from here
-                ! If not possible to access LND_NCPL/ROF_NCPL from here, we can maybe create a namelist variable with default value 6 and the user can change it if needed after creating the case and confirming the NCPL values
-                ! But this seems a sub-optimal solution...
+                                                          this%min_withd_actual_grc(g)) * irrig_length * grc%area(g) * m3_over_km2_to_mm
           end do
           
      end subroutine CalcSectorWaterNeeded
