@@ -49,7 +49,7 @@ Module HydrologyNoDrainageMod
 contains
 
    !-----------------------------------------------------------------------
-   subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwater_inst, water_inst, volr, rof_prognostic)
+   subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwater_inst, irrig_length, water_inst, volr, rof_prognostic)
       !
       ! !DESCRIPTION:
       ! Calculates sectorwal water withdrawal, consumption and return flow fluxes;
@@ -70,6 +70,9 @@ contains
       type(sectorwater_type)         , intent(inout) :: sectorwater_inst
       type(water_type)               , intent(inout) :: water_inst
       
+      ! duration of irrigation process
+      integer, intent(in) :: irrig_length
+
       ! river water volume (m3) (ignored if rof_prognostic is .false.)
       real(r8), intent(in) :: volr( bounds%begg: )
 
@@ -94,7 +97,7 @@ contains
       allocate(total_cons(bounds%begg:bounds%endg))
 
       if (is_beg_curr_day()) then
-         call sectorwater_inst%CalcSectorWaterNeeded(bounds, volr, rof_prognostic)
+         call sectorwater_inst%CalcSectorWaterNeeded(bounds, irrig_length, volr, rof_prognostic)
       endif
    
       ! Here I am not sure why in general it is required to check for isnan
