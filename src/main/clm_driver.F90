@@ -43,6 +43,7 @@ module clm_driver
   !
   use HydrologyNoDrainageMod , only : CalcAndWithdrawIrrigationFluxes, CalcAndWithdrawSectorWaterFluxes, HandleNewSnow, HydrologyNoDrainage ! (formerly Hydrology2Mod)
   use HydrologyDrainageMod   , only : HydrologyDrainage   ! (formerly Hydrology2Mod)
+  use IrrigationMod          , only : irrigation_params_type 
   use CanopyHydrologyMod     , only : CanopyInterceptionAndThroughfall
   use SurfaceWaterMod        , only : UpdateFracH2oSfc
   use LakeHydrologyMod       , only : LakeHydrology
@@ -525,7 +526,7 @@ contains
                bounds = bounds_clump, &
                soilhydrology_inst = soilhydrology_inst, &
                sectorwater_inst = sectorwater_inst, &
-               irrig_length = irrigation_inst%irrig_length_for_sectorwater_mod, & 
+               irrig_length = irrigation_params_type%irrig_length, & 
                water_inst = water_inst, &
                volr       = water_inst%wateratm2lndbulk_inst%volrmch_grc(bounds_clump%begg:bounds_clump%endg), &
                rof_prognostic = rof_prognostic)
