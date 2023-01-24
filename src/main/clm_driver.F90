@@ -525,7 +525,7 @@ contains
                bounds = bounds_clump, &
                soilhydrology_inst = soilhydrology_inst, &
                sectorwater_inst = sectorwater_inst, &
-               irrigation_inst = irrigation_inst, & 
+               irrig_length = irrigation_inst%irrig_length_for_sectorwater_mod, & 
                water_inst = water_inst, &
                volr       = water_inst%wateratm2lndbulk_inst%volrmch_grc(bounds_clump%begg:bounds_clump%endg), &
                rof_prognostic = rof_prognostic)
