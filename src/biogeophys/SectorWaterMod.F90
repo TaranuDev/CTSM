@@ -190,7 +190,18 @@ module SectorWaterMod
           ! temporary variables corresponding to the components of sectorwater_params_type
           real(r8) :: sectorwater_river_volume_threshold
           logical  :: limit_sectorwater_if_rof_enabled
+           ! temporary variables corresponding to the components of irrigation_params_type
+          real(r8) :: irrig_min_lai
+          integer  :: irrig_start_time
           integer  :: irrig_length
+          real(r8) :: irrig_target_smp
+          real(r8) :: irrig_depth
+          real(r8) :: irrig_threshold_fraction
+          real(r8) :: irrig_river_volume_threshold
+          logical  :: limit_irrigation_if_rof_enabled
+          logical  :: use_groundwater_irrigation
+          character(len=64) :: irrig_method_default
+          integer  :: irrig_method_default_int
  
           integer  :: ierr                 ! error code
           integer  :: unitn                ! unit for namelist file
@@ -230,9 +241,23 @@ module SectorWaterMod
           call shr_mpi_bcast(sectorwater_river_volume_threshold, mpicom)
           call shr_mpi_bcast(limit_sectorwater_if_rof_enabled, mpicom)
 
-          namelist /irrigation_inparm/ irrig_length
+          namelist /irrigation_inparm/ irrig_min_lai, irrig_start_time, irrig_length, &
+          irrig_target_smp, irrig_depth, irrig_threshold_fraction, &
+          irrig_river_volume_threshold, limit_irrigation_if_rof_enabled, &
+          use_groundwater_irrigation, irrig_method_default
 
+          ! Initialize options to garbage defaults, forcing all to be specified explicitly in
+          ! order to get reasonable results
+          irrig_min_lai = nan
+          irrig_start_time = 0
           irrig_length = 0
+          irrig_target_smp = nan
+          irrig_depth = nan
+          irrig_threshold_fraction = nan
+          irrig_river_volume_threshold = nan
+          limit_irrigation_if_rof_enabled = .false.
+          use_groundwater_irrigation = .false.
+          irrig_method_default = ' '        
 
           if (masterproc) then
                unitn = getavu()
