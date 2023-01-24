@@ -31,6 +31,9 @@ module SectorWaterMod
        ! enabled (i.e., rof_prognostic is .true.) - otherwise we don't limit sectorwater usage,
        ! regardless of the value of this flag.
        logical :: limit_sectorwater_if_rof_enabled
+
+       ! Length of irrigation process
+       integer :: irrig_length
  end type sectorwater_params_type
  
  
@@ -138,6 +141,7 @@ module SectorWaterMod
        type(sectorwater_params_type) :: this  ! function result
        real(r8), intent(in) :: sectorwater_river_volume_threshold
        logical , intent(in) :: limit_sectorwater_if_rof_enabled
+       integer , intent(in) :: irrig_length
        !
        ! !LOCAL VARIABLES:
        
@@ -145,6 +149,7 @@ module SectorWaterMod
        !-----------------------------------------------------------------------
        this%sectorwater_river_volume_threshold = sectorwater_river_volume_threshold
        this%limit_sectorwater_if_rof_enabled = limit_sectorwater_if_rof_enabled
+       this%irrig_length = irrig_length
 
      end function sectorwater_params_constructor
  
@@ -185,6 +190,7 @@ module SectorWaterMod
           ! temporary variables corresponding to the components of sectorwater_params_type
           real(r8) :: sectorwater_river_volume_threshold
           logical  :: limit_sectorwater_if_rof_enabled
+          integer  :: irrig_length
  
           integer  :: ierr                 ! error code
           integer  :: unitn                ! unit for namelist file
@@ -222,11 +228,39 @@ module SectorWaterMod
 
           call shr_mpi_bcast(sectorwater_river_volume_threshold, mpicom)
           call shr_mpi_bcast(limit_sectorwater_if_rof_enabled, mpicom)
-    
-  
+
+          nmlname = 'irrigation_inparm'
+          namelist /irrigation_inparm/ irrig_length
+
+          irrig_length = 0
+
+          if (masterproc) then
+               unitn = getavu()
+               write(iulog,*) 'Read in '//nmlname//'  namelist'
+               call opnfil (NLFilename, unitn, 'F')
+               call shr_nl_find_group_name(unitn, nmlname, status=ierr)
+               
+               if (ierr == 0) then
+                    read(unitn, nml=irrigation_inparm, iostat=ierr)
+                    
+                    if (ierr /= 0) then
+                         call endrun(msg="ERROR reading "//nmlname//"namelist"//errmsg(sourcefile, __LINE__))
+                    end if
+               else
+                    call endrun(msg="ERROR could NOT find "//nmlname//"namelist"//errmsg(sourcefile, __LINE__))
+               end if
+
+               call relavu( unitn )
+
+          end if
+
+          call shr_mpi_bcast(irrig_length, mpicom)
+
           this%params = sectorwater_params_type(sectorwater_river_volume_threshold = sectorwater_river_volume_threshold, &
-               limit_sectorwater_if_rof_enabled = limit_sectorwater_if_rof_enabled)
- 
+          limit_sectorwater_if_rof_enabled = limit_sectorwater_if_rof_enabled, irrig_length = irrig_length)
+
+          nmlname = 'sectorwater_inparm'
+          
           if (masterproc) then
                write(iulog,*) ' '
                write(iulog,*) nmlname//' settings:'
@@ -238,6 +272,7 @@ module SectorWaterMod
                end if
                write(iulog,*) ' '
           end if
+                  
      end subroutine ReadNamelist
  
      !-----------------------------------------------------------------------
@@ -801,7 +836,7 @@ module SectorWaterMod
 
      endsubroutine ReadSectorWaterData
  
-     subroutine CalcSectorWaterNeeded(this, bounds, irrig_length, volr, rof_prognostic)
+     subroutine CalcSectorWaterNeeded(this, bounds, volr, rof_prognostic)
  
           use shr_const_mod      , only : SHR_CONST_TKFRZ
           use clm_time_manager   , only : get_curr_date, is_end_curr_month, get_curr_days_per_year
@@ -810,8 +845,6 @@ module SectorWaterMod
           class(sectorwater_type) , intent(inout) :: this
           type(bounds_type)       , intent(in)    :: bounds
           
-          ! durration of irrigation process
-          integer, intent(in)  :: irrig_length
           ! river water volume (m3) (ignored if rof_prognostic is .false.)
           real(r8), intent(in) :: volr(bounds%begg:bounds%endg)
           
@@ -1021,7 +1054,7 @@ module SectorWaterMod
                ! Total actual withdrawal flow flux for all sectors during one irrigation event (default irrigation deficit computed once a day and the withdrawal happens over a period of 4 hours -> irrig_length)
                this%sectorwater_total_actual_withd(g) =  (this%dom_withd_actual_grc(g) + this%liv_withd_actual_grc(g) + &
                                                           this%elec_withd_actual_grc(g) + this%mfc_withd_actual_grc(g) + &
-                                                          this%min_withd_actual_grc(g)) * irrig_length * grc%area(g) * m3_over_km2_to_mm
+                                                          this%min_withd_actual_grc(g)) * this%params%irrig_length * grc%area(g) * m3_over_km2_to_mm
           end do
           
      end subroutine CalcSectorWaterNeeded

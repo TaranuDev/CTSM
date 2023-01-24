@@ -179,8 +179,7 @@ module IrrigationMod
      real(r8), pointer :: irrig_rate_demand_patch     (:) ! current irrigation rate, neglecting surface water source limitation [mm/s]
      integer , pointer :: n_irrig_steps_left_patch    (:) ! number of time steps for which we still need to irrigate today (if 0, ignore)
      real(r8), pointer :: qflx_irrig_demand_patch     (:) ! irrigation flux neglecting surface water source limitation [mm/s]
-     integer,  pointer :: irrig_length_for_sectorwater_mod (:) ! equivalent to irrigation_inst%params%irrig_legth, but expressed as pointer, to be accessed outside this module
-
+     
    contains
      ! Public routines
      ! COMPILER_BUG(wjs, 2014-10-15, pgi 14.7) Add an "Irrigation" prefix to some  generic routines like "Init"
@@ -449,9 +448,7 @@ contains
          limit_irrigation_if_rof_enabled = limit_irrigation_if_rof_enabled, &
          use_groundwater_irrigation = use_groundwater_irrigation, &
          irrig_method_default = irrig_method_default_int)
-
-   this%irrig_length_for_sectorwater_mod = this%params%irrig_length
-   
+ 
     if (masterproc) then
        write(iulog,*) ' '
        write(iulog,*) nmlname//' settings:'
