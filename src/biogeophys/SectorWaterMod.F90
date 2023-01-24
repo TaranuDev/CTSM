@@ -195,7 +195,8 @@ module SectorWaterMod
           integer  :: ierr                 ! error code
           integer  :: unitn                ! unit for namelist file
 
-          character(len=*), parameter :: nmlname = 'sectorwater_inparm'
+          character(len=*), parameter :: nmlname_sectorwater = 'sectorwater_inparm'
+          character(len=*), parameter :: nmlname_irrigation  = 'irrigation_inparm'
           character(len=*), parameter :: subname = 'ReadNamelist'
           !-----------------------------------------------------------------------
  
@@ -208,18 +209,18 @@ module SectorWaterMod
  
           if (masterproc) then
                unitn = getavu()
-               write(iulog,*) 'Read in '//nmlname//'  namelist'
+               write(iulog,*) 'Read in '//nmlname_sectorwater//'  namelist'
                call opnfil (NLFilename, unitn, 'F')
-               call shr_nl_find_group_name(unitn, nmlname, status=ierr)
+               call shr_nl_find_group_name(unitn, nmlname_sectorwater, status=ierr)
                
                if (ierr == 0) then
                     read(unitn, nml=sectorwater_inparm, iostat=ierr)
                     
                     if (ierr /= 0) then
-                         call endrun(msg="ERROR reading "//nmlname//"namelist"//errmsg(sourcefile, __LINE__))
+                         call endrun(msg="ERROR reading "//nmlname_sectorwater//"namelist"//errmsg(sourcefile, __LINE__))
                     end if
                else
-                    call endrun(msg="ERROR could NOT find "//nmlname//"namelist"//errmsg(sourcefile, __LINE__))
+                    call endrun(msg="ERROR could NOT find "//nmlname_sectorwater//"namelist"//errmsg(sourcefile, __LINE__))
                end if
 
                call relavu( unitn )
@@ -229,25 +230,24 @@ module SectorWaterMod
           call shr_mpi_bcast(sectorwater_river_volume_threshold, mpicom)
           call shr_mpi_bcast(limit_sectorwater_if_rof_enabled, mpicom)
 
-          nmlname = 'irrigation_inparm'
           namelist /irrigation_inparm/ irrig_length
 
           irrig_length = 0
 
           if (masterproc) then
                unitn = getavu()
-               write(iulog,*) 'Read in '//nmlname//'  namelist'
+               write(iulog,*) 'Read in '//nmlname_irrigation//'  namelist'
                call opnfil (NLFilename, unitn, 'F')
-               call shr_nl_find_group_name(unitn, nmlname, status=ierr)
+               call shr_nl_find_group_name(unitn, nmlname_irrigation, status=ierr)
                
                if (ierr == 0) then
                     read(unitn, nml=irrigation_inparm, iostat=ierr)
                     
                     if (ierr /= 0) then
-                         call endrun(msg="ERROR reading "//nmlname//"namelist"//errmsg(sourcefile, __LINE__))
+                         call endrun(msg="ERROR reading "//nmlname_irrigation//"namelist"//errmsg(sourcefile, __LINE__))
                     end if
                else
-                    call endrun(msg="ERROR could NOT find "//nmlname//"namelist"//errmsg(sourcefile, __LINE__))
+                    call endrun(msg="ERROR could NOT find "//nmlname_irrigation//"namelist"//errmsg(sourcefile, __LINE__))
                end if
 
                call relavu( unitn )
@@ -258,12 +258,10 @@ module SectorWaterMod
 
           this%params = sectorwater_params_type(sectorwater_river_volume_threshold = sectorwater_river_volume_threshold, &
           limit_sectorwater_if_rof_enabled = limit_sectorwater_if_rof_enabled, irrig_length = irrig_length)
-
-          nmlname = 'sectorwater_inparm'
           
           if (masterproc) then
                write(iulog,*) ' '
-               write(iulog,*) nmlname//' settings:'
+               write(iulog,*) nmlname_sectorwater//' settings:'
                ! Write settings one-by-one rather than with a nml write because
                ! sectorwater_river_volume_threshold may be NaN
                write(iulog,*) 'limit_sectorwater_if_rof_enabled = ', limit_sectorwater_if_rof_enabled
