@@ -129,7 +129,7 @@ module SectorWaterMod
  
     !-----------------------------------------------------------------------
      function sectorwater_params_constructor(sectorwater_river_volume_threshold, &
-          limit_sectorwater_if_rof_enabled) &
+          limit_sectorwater_if_rof_enabled, irrig_length) &
           result(this)
        !
        ! !DESCRIPTION:
