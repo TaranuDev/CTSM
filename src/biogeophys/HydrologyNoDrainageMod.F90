@@ -49,7 +49,7 @@ Module HydrologyNoDrainageMod
 contains
 
    !-----------------------------------------------------------------------
-   subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwater_inst, irrig_length, water_inst, volr, rof_prognostic)
+   subroutine CalcAndWithdrawSectorWaterFluxes(bounds, soilhydrology_inst, sectorwater_inst, irrigation_inst, water_inst, volr, rof_prognostic)
       !
       ! !DESCRIPTION:
       ! Calculates sectorwal water withdrawal, consumption and return flow fluxes;
@@ -68,10 +68,9 @@ contains
       type(bounds_type)              , intent(in)    :: bounds
       type(soilhydrology_type)       , intent(in)    :: soilhydrology_inst
       type(sectorwater_type)         , intent(inout) :: sectorwater_inst
+      type(irrigation_type)          , intent(inout) :: irrigation_inst
       type(water_type)               , intent(inout) :: water_inst
       
-      ! duration of irrigation process
-      integer, intent(in) :: irrig_length
 
       ! river water volume (m3) (ignored if rof_prognostic is .false.)
       real(r8), intent(in) :: volr( bounds%begg: )
@@ -85,11 +84,16 @@ contains
       
       ! !LOCAL VARIABLES:
       integer :: i  ! tracer index
-      
+
+      ! duration of irrigation process
+      integer :: irrig_length
+
       character(len=*), parameter :: subname = 'CalcAndWithdrawSectorWaterFluxes'
       !-----------------------------------------------------------------------
       
-      
+      ! Get irrig_lenght value
+      irrig_length = irrigation_inst%params%irrig_length
+
       ! Read withdrawal and consumption data from input surfdata
       ! Compute the withdrawal, consumption and return flow (expected and actual)
       ! To limit computation time, call this subroutine only once a day (we assume uniform demand throughout a day)
