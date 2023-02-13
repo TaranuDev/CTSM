@@ -43,7 +43,7 @@ module SectorWaterMod
        ! (line n) path_directory_with_the_input_sectorwater_data/name_file_for_year_n.nc (n represent a year between 1971 and 2010)
        ! (line N) path_directory_with_the_input_sectorwater_data/name_file_for_year_2010.nc (N line corresponds to the last year input data path)
        ! N.B. Each new line represent the path to a monthly input dataset for the given year. It is the user responsability to make sure that the inputs path are given in the right consecutive order from first to last year.
-       character(len=*) :: path_sectorwater_input_data
+       character(len=256) :: path_sectorwater_input_data
  end type sectorwater_params_type
  
  
@@ -785,6 +785,7 @@ module SectorWaterMod
  
           character(len=256) :: current_year_input_data ! path for the sectorwater input data for current year
           character(len=256) :: locfn             ! local file name
+          character(len=256) :: yearErrMessage
           character(len=32)  :: subname = 'ReadSectorWaterData'
           !-----------------------------------------------------------------------
  
@@ -812,10 +813,14 @@ module SectorWaterMod
           read(10,*,IOSTAT=i) start_year_input, end_year_input
           ! Check if current year is withing the input data limits
           if (year > end_year_input) then
-               call endrun(msg='Error: there is no sector water demand data for current year. Please update the sector water input .txt file with the path to water demand inputs for current year '//trim(adjustl(write(year, '(I0)')))//errMsg(sourcefile, __LINE__)) 
+               write(yearErrMessage, '(I0)') year
+               yearErrMessage = trim(yearErrMessage)
+               call endrun(msg='Error: there is no sector water demand data for current year. Please update the sector water input .txt file with the path to water demand inputs for current year '//yearErrMessage//errMsg(sourcefile, __LINE__)) 
           end if
           if (year < start_year_input) then
-               call endrun(msg='Error: there is no sector water demand data for current year. Please update the sector water input .txt file with the path to water demand inputs for current year '//trim(adjustl(write(year, '(I0)')))//errMsg(sourcefile, __LINE__)) 
+               write(yearErrMessage, '(I0)') year
+               yearErrMessage = trim(yearErrMessage)
+               call endrun(msg='Error: there is no sector water demand data for current year. Please update the sector water input .txt file with the path to water demand inputs for current year '//yearErrMessage//errMsg(sourcefile, __LINE__)) 
           end if
 
           ! Compute the current line number
