@@ -783,6 +783,7 @@ module SectorWaterMod
           real(r8), pointer :: mon_min_withd(:)   ! monthly mining withdrawal read from input files
           real(r8), pointer :: mon_min_cons(:)    ! monthly mining consumption read from input files
  
+          character(len=256) :: current_line
           character(len=256) :: current_year_input_data ! path for the sectorwater input data for current year
           character(len=256) :: locfn             ! local file name
           character(len=256) :: yearErrMessage
@@ -824,7 +825,7 @@ module SectorWaterMod
           end if
 
           ! Compute the current line number
-          current_line_number = year_now - start_year_input + 2
+          current_line_number = year - start_year_input + 2
           ! Rewind file
           Rewind(10)
 
