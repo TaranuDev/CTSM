@@ -34,6 +34,16 @@ module SectorWaterMod
 
        ! Length of irrigation process
        integer :: irrig_length
+       
+       ! The sectoral water usage is computed based on the provided input data
+       ! path_sectorwater_input_data is the path to a .txt file containing the paths to each year .nc file with sectoral withdrawal and consumption data
+       ! The right format of the .txt file is:
+       ! (line 1) first year and last year provided as integers separated by coma (e.g. 1971,2010)
+       ! (line 2) path_directory_with_the_input_sectorwater_data/name_file_for_year_1971.nc (here 1971 provided as example)
+       ! (line n) path_directory_with_the_input_sectorwater_data/name_file_for_year_n.nc (n represent a year between 1971 and 2010)
+       ! (line N) path_directory_with_the_input_sectorwater_data/name_file_for_year_2010.nc (N line corresponds to the last year input data path)
+       ! N.B. Each new line represent the path to a monthly input dataset for the given year. It is the user responsability to make sure that the inputs path are given in the right consecutive order from first to last year.
+       character(len=*) :: path_sectorwater_input_data
  end type sectorwater_params_type
  
  
@@ -129,7 +139,7 @@ module SectorWaterMod
  
     !-----------------------------------------------------------------------
      function sectorwater_params_constructor(sectorwater_river_volume_threshold, &
-          limit_sectorwater_if_rof_enabled, irrig_length) &
+          limit_sectorwater_if_rof_enabled, irrig_length, path_sectorwater_input_data) &
           result(this)
        !
        ! !DESCRIPTION:
@@ -142,6 +152,7 @@ module SectorWaterMod
        real(r8), intent(in) :: sectorwater_river_volume_threshold
        logical , intent(in) :: limit_sectorwater_if_rof_enabled
        integer , intent(in) :: irrig_length
+       character(len=256), intent(in) :: path_sectorwater_input_data
        !
        ! !LOCAL VARIABLES:
        
@@ -150,6 +161,7 @@ module SectorWaterMod
        this%sectorwater_river_volume_threshold = sectorwater_river_volume_threshold
        this%limit_sectorwater_if_rof_enabled = limit_sectorwater_if_rof_enabled
        this%irrig_length = irrig_length
+       this%path_sectorwater_input_data = path_sectorwater_input_data
 
      end function sectorwater_params_constructor
  
@@ -190,6 +202,7 @@ module SectorWaterMod
           ! temporary variables corresponding to the components of sectorwater_params_type
           real(r8) :: sectorwater_river_volume_threshold
           logical  :: limit_sectorwater_if_rof_enabled
+          character(len=256) :: path_sectorwater_input_data
            ! temporary variables corresponding to the components of irrigation_params_type
           real(r8) :: irrig_min_lai
           integer  :: irrig_start_time
@@ -211,12 +224,13 @@ module SectorWaterMod
           character(len=*), parameter :: subname = 'ReadNamelist'
           !-----------------------------------------------------------------------
  
-          namelist /sectorwater_inparm/ sectorwater_river_volume_threshold, limit_sectorwater_if_rof_enabled
+          namelist /sectorwater_inparm/ sectorwater_river_volume_threshold, limit_sectorwater_if_rof_enabled, path_sectorwater_input_data
     
           ! Initialize options to garbage defaults, forcing all to be specified explicitly in
           ! order to get reasonable results
           sectorwater_river_volume_threshold = nan
           limit_sectorwater_if_rof_enabled = .false.
+          path_sectorwater_input_data = ' '
  
           if (masterproc) then
                unitn = getavu()
@@ -240,6 +254,8 @@ module SectorWaterMod
 
           call shr_mpi_bcast(sectorwater_river_volume_threshold, mpicom)
           call shr_mpi_bcast(limit_sectorwater_if_rof_enabled, mpicom)
+          call shr_mpi_bcast(path_sectorwater_input_data, mpicom)
+
 
           namelist /irrigation_inparm/ irrig_min_lai, irrig_start_time, irrig_length, &
           irrig_target_smp, irrig_depth, irrig_threshold_fraction, &
@@ -282,7 +298,8 @@ module SectorWaterMod
           call shr_mpi_bcast(irrig_length, mpicom)
 
           this%params = sectorwater_params_type(sectorwater_river_volume_threshold = sectorwater_river_volume_threshold, &
-          limit_sectorwater_if_rof_enabled = limit_sectorwater_if_rof_enabled, irrig_length = irrig_length)
+          limit_sectorwater_if_rof_enabled = limit_sectorwater_if_rof_enabled, irrig_length = irrig_length, &
+          path_sectorwater_input_data = path_sectorwater_input_data)
           
           if (masterproc) then
                write(iulog,*) ' '
@@ -293,6 +310,7 @@ module SectorWaterMod
                if (limit_sectorwater_if_rof_enabled) then
                     write(iulog,*) 'sectorwater_river_volume_threshold = ', sectorwater_river_volume_threshold
                end if
+               write(iulog,*) 'path_sectorwater_input_data = ', path_sectorwater_input_data
                write(iulog,*) ' '
           end if
                   
@@ -728,14 +746,13 @@ module SectorWaterMod
      ! Science routines
      ! ========================================================================
      
-     subroutine ReadSectorWaterData (this, bounds, mon)
+     subroutine ReadSectorWaterData (this, bounds, year, mon)
           !
           ! !DESCRIPTION:
           ! read the input data, withdrawal and consumption, for all sectors and for the current month 
           !
           ! !USES:
           use fileutils       , only : getfil
-          use clm_varctl      , only : fsurdat
           use clm_varcon      , only : nameg
           use ncdio_pio       , only : file_desc_t
           use spmdMod         , only : masterproc
@@ -744,12 +761,14 @@ module SectorWaterMod
           ! !ARGUMENTS:
           class(sectorwater_type), intent(inout) :: this
           type(bounds_type)      , intent(in)    :: bounds
+          integer                , intent(in)    :: year    ! current year (e.g. 2000)
           integer                , intent(in)    :: mon     ! month (1, ..., 12) for nstep+1
      
           !
           ! !LOCAL VARIABLES:
           type(file_desc_t) :: ncid               ! netcdf id
-    
+          integer :: start_year_input, end_year_input, current_line_number, i, read_status
+
           integer :: ier                          ! error code
           integer :: g                            ! gridcell index
           logical :: readvar
@@ -764,6 +783,7 @@ module SectorWaterMod
           real(r8), pointer :: mon_min_withd(:)   ! monthly mining withdrawal read from input files
           real(r8), pointer :: mon_min_cons(:)    ! monthly mining consumption read from input files
  
+          character(len=256) :: current_year_input_data ! path for the sectorwater input data for current year
           character(len=256) :: locfn             ! local file name
           character(len=32)  :: subname = 'ReadSectorWaterData'
           !-----------------------------------------------------------------------
@@ -786,8 +806,37 @@ module SectorWaterMod
                     mon_min_cons(bounds%begg:bounds%endg), &
                     stat=ier)
                     
+          ! Open the input .txt file:
+          open(unit=10, file=this%params%path_sectorwater_input_data, status='old')
+          ! Read first line to get start_year_input and end_year_input
+          read(10,*,IOSTAT=i) start_year_input, end_year_input
+          ! Check if current year is withing the input data limits
+          if (year > end_year_input) then
+               call endrun(msg='Error: there is no sector water demand data for current year. Please update the sector water input .txt file with the path to water demand inputs for current year '//trim(adjustl(write(year, '(I0)')))//errMsg(sourcefile, __LINE__)) 
+          end if
+          if (year < start_year_input) then
+               call endrun(msg='Error: there is no sector water demand data for current year. Please update the sector water input .txt file with the path to water demand inputs for current year '//trim(adjustl(write(year, '(I0)')))//errMsg(sourcefile, __LINE__)) 
+          end if
+
+          ! Compute the current line number
+          current_line_number = year_now - start_year_input + 2
+          ! Rewind file
+          Rewind(10)
+
+          ! Loop through each line
+          Do i = 1, current_line_number
+               Read(10,*,IOSTAT=read_status) current_line
+               If (read_status /= 0) Then
+                    Exit
+               End If
+          End Do
+          ! Assign current line to path_current_year_input_data
+          current_year_input_data = current_line
+          ! Close the input .txt file
+          Close(10)
+
           ! Determine necessary indices
-          call getfil(fsurdat, locfn, 0)
+          call getfil(current_year_input_data, locfn, 0)
           call ncd_pio_openfile (ncid, trim(locfn), 0)
           
           call ncd_io(ncid=ncid, varname='withd_dom', flag='read', data=mon_dom_withd, &
@@ -938,13 +987,13 @@ module SectorWaterMod
           ! For the first month of the simulation we need to read the data at the beginning of the month
           ! But for all the remaining months, the information is updated at the end of the month.
           if (first_read == 1) then 
-               call this%ReadSectorWaterData(bounds, mon)
+               call this%ReadSectorWaterData(bounds, year, mon)
                first_read = 2
           endif
 
           ! Read input for the new month if end of current month
           if (is_end_curr_month()) then
-               call this%ReadSectorWaterData(bounds, mon)
+               call this%ReadSectorWaterData(bounds, year, mon)
           endif
           
           ! Compute demand [mm]
