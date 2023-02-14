@@ -840,7 +840,7 @@ module SectorWaterMod
           write(string_year, '(I0)') year
           ! Check if the current_line has the string_year in it
           ! If not, it may be that user didn't included the path for this year, or the paths are not provided in consecutive order by year
-          if (index(current_line, trim(string_year_now)).eq.0) Then
+          if (index(current_line, trim(string_year)).eq.0) Then
                call endrun(msg=' ERROR: for current year, the sector water input path is '//current_line//". This path name do not contain the current year in its name (current year is "//trim(string_year)//")."//errMsg(sourcefile, __LINE__))
           end if
           ! Assign current line to path_current_year_input_data
