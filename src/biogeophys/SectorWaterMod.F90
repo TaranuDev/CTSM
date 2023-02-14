@@ -786,7 +786,8 @@ module SectorWaterMod
           character(len=256) :: current_line
           character(len=256) :: current_year_input_data ! path for the sectorwater input data for current year
           character(len=256) :: locfn             ! local file name
-          character(len=256) :: yearErrMessage
+          character(len=20)  :: yearErrMessage
+          character(len=20)  :: string_year
           character(len=32)  :: subname = 'ReadSectorWaterData'
           !-----------------------------------------------------------------------
  
@@ -827,15 +828,21 @@ module SectorWaterMod
           ! Compute the current line number
           current_line_number = year - start_year_input + 2
           ! Rewind file
-          Rewind(10)
+          rewind(10)
 
-          ! Loop through each line
-          Do i = 1, current_line_number
-               Read(10,*,IOSTAT=read_status) current_line
-               If (read_status /= 0) Then
-                    Exit
-               End If
-          End Do
+          i = 0
+          do
+               read(10,'(A)', ADVANCE='NO',IOSTAT=read_status) current_line
+               i = i + 1
+               if (i == current_line_number) exit
+          end do
+          ! convert year to string_year
+          write(string_year, '(I0)') year
+          ! Check if the current_line has the string_year in it
+          ! If not, it may be that user didn't included the path for this year, or the paths are not provided in consecutive order by year
+          if (index(current_line, trim(string_year_now)).eq.0) Then
+               call endrun(msg=' ERROR: for current year, the sector water input path is '//current_line//". This path name do not contain the current year in its name (current year is "//trim(string_year)//")."//errMsg(sourcefile, __LINE__))
+          end if
           ! Assign current line to path_current_year_input_data
           current_year_input_data = current_line
           ! Close the input .txt file
