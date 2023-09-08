@@ -36,15 +36,15 @@ module Waterlnd2atmType
      real(r8), pointer :: qflx_rofice_grc    (:)   ! rof ice forcing, grc level
      real(r8), pointer :: qflx_liq_from_ice_col(:) ! liquid runoff from converted ice runoff
      real(r8), pointer :: qirrig_grc         (:)   ! irrigation flux
-     real(r8), pointer :: qdom_withd_grc     (:)   ! sfc domestic actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qdom_withd_grc     (:)   ! domestic actual withdrawal as satisfied by CLM
      real(r8), pointer :: qdom_rf_grc        (:)   ! domestic return flow
-     real(r8), pointer :: qliv_withd_grc     (:)   ! sfc livestock actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qliv_withd_grc     (:)   ! livestock actual withdrawal as satisfied by CLM
      real(r8), pointer :: qliv_rf_grc        (:)   ! livestock return flow
-     real(r8), pointer :: qelec_withd_grc    (:)   ! sfc thermoelectric actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qelec_withd_grc    (:)   ! thermoelectric actual withdrawal as satisfied by CLM
      real(r8), pointer :: qelec_rf_grc       (:)   ! thermoelectric return flow
-     real(r8), pointer :: qmfc_withd_grc     (:)   ! sfc manufacturing actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qmfc_withd_grc     (:)   ! manufacturing actual withdrawal as satisfied by CLM
      real(r8), pointer :: qmfc_rf_grc        (:)   ! manufacturing return flow
-     real(r8), pointer :: qmin_withd_grc     (:)   ! sfc mining actual withdrawal as satisfied by CLM
+     real(r8), pointer :: qmin_withd_grc     (:)   ! mining actual withdrawal as satisfied by CLM
      real(r8), pointer :: qmin_rf_grc        (:)   ! mining return flow
      real(r8), pointer :: qsectorwater_grc   (:)   ! total consumption related to sector water abstractions
 

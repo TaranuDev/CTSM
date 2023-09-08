@@ -3026,10 +3026,8 @@ sub setup_logic_sectorwater_parameters {
   $var = "sectorwater_river_volume_threshold";
   if ( &value_is_true($nl->get_value("limit_sectorwater_if_rof_enabled")) ) {
      add_default($opts, $nl_flags->{'inputdata_rootdir'}, $definition, $defaults, $nl, $var);
-  } else {
-     if (defined($nl->get_value($var))) {
-        $log->fatal_error("$var can only be set if limit_sectorwater_if_rof_enabled is true");
-     }
+  } elsif (defined($nl->get_value($var))) {
+     $log->fatal_error("$var can only be set if limit_sectorwater_if_rof_enabled is true");
   }
 }
 
